@@ -1,11 +1,34 @@
 (ns hive.core
-  (:require [zeromq.zmq :as zmq]))
+  (:require [hive.zmq]
+            [clojure.core.async :as async])
+  (:import (java.util Date)))
 
-(defn new-server! [port]
-  (let [context (zmq/context 1)
-        router  (zmq/socket context :router)]
-    (zmq/set-receive-timeout router 1000)
-    (zmq/bind router (str "tcp://*:" port))))
+(def registered-services* (atom {}))
+(def healthcheck-interval 15000)
+(def healthcheck-threshold 60000)
 
-(defn terminate-server! [server]
-  (zmq/close server))
+(defn register-new-service! [service-name]
+  (swap! registered-services* service-name {:last-timestamp (Date.)}))
+
+(defn unregister-service [service-name]
+  (swap! registered-services* dissoc service-name))
+
+(defn publish-by-event [message]
+  (-> message :meta :type keyword))
+
+(defn publish-by-sender [message]
+  (-> message :identity keyword))
+
+(defn create-publisher [channel by]
+  (async/pub channel by))
+
+(def event-handlers {:new-event (fn [_ _] )
+                     :heartbeat (fn [_ _] )
+                     :register  (fn [_ _] )
+                     :close     (fn [_ _] )})
+
+(defn healthcheck [service]
+  (async/go-loop []
+
+    (recur)))
+
