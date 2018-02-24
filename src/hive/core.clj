@@ -30,7 +30,7 @@
 (defn dispatch-messages [message router]
   ((get event-handlers (publish-by-event message)) message router))
 
-(defn main []
-  (let [router (hive.zmq/new-router-socket! 9898)]
-    (hive.zmq/start-receiving! router dispatch-messages)))
+(defn- main [& args]
+  (hive.zmq/new-hive-server! 9898 dispatch-messages))
+
 
