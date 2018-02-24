@@ -22,13 +22,15 @@
 (defn create-publisher [channel by]
   (async/pub channel by))
 
-(def event-handlers {:new-event (fn [_ _] )
-                     :heartbeat (fn [_ _] )
-                     :register  (fn [_ _] )
-                     :close     (fn [_ _] )})
+(def event-handlers {:new-event (fn [message _] (prn "RECEIVED NEW-EVENT: " message))
+                     :heartbeat (fn [message _] (prn "RECEIVED HEARTBEAT: " message))
+                     :register  (fn [message _] (prn "RECEIVED REGISTER: " message))
+                     :close     (fn [message _] (prn "RECEIVED CLOSE: " message))})
 
-(defn healthcheck [service]
-  (async/go-loop []
+(defn dispatch-messages [message router]
+  ((get event-handlers (publish-by-event message)) message router))
 
-    (recur)))
+(defn main []
+  (let [router (hive.zmq/new-router-socket! 9898)]
+    (hive.zmq/start-receiving! router dispatch-messages)))
 

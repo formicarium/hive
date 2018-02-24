@@ -1,6 +1,7 @@
 (ns hive.zmq
   (:require [zeromq.zmq :as zmq]
             [cheshire.core :as cheshire]
+            [com.stuartsierra.component :as component]
             [clojure.core.async :as async]))
 
 (def context (zmq/context 1))
@@ -61,18 +62,34 @@
                 (send-message! dealer))
        (recur))]))
 
-(defn receive-channel [router on-receive]
-  (let [ch (async/chan 1000)]
-    [ch
-     (async/go-loop []
-       (some->> (receive-message! router)
-                (async/>! ch))
-       (recur))
-     (async/go-loop []
-       (some-> (async/<! ch)
-               (on-receive router))
-       (recur))]))
+(defn start-receiving! [router on-receive]
+  (let [stop-channel (async/chan)
+        ch (async/chan 1000)]
+    (async/go-loop []
+      (when (async/alt! stop-channel false :default :keep-going)
+        (some->> (receive-message! router)
+                 (async/>! ch))
+        (recur)))
+    (async/go-loop []
+      (when (async/alt! stop-channel false :default :keep-going)
+        (some-> (async/<! ch)
+                (on-receive router))
+        (recur)))
+    stop-channel))
 
+(defn terminate-receiver-channel! [ch] (async/close! ch))
+(defn terminate-router-socket! [router] (zmq/close router))
+
+(defrecord ZMQServer [port on-receive-fn]
+  component/Lifecycle
+  (start [this]
+    (let [router (new-router-socket! port)]
+      (assoc this :stop-channel (start-receiving! router on-receive-fn)
+                  :router router)))
+  (stop [this]
+    (terminate-receiver-channel! (:stop-channel this))
+    (terminate-router-socket! (:router this))
+    (dissoc this :channels :router)))
 
 (defn request-connection! [dealer]
   (send-message! dealer {:meta    {:type "request-connection"}
@@ -81,5 +98,5 @@
 
 (defn handle-new-connection [router message]
   ;; DO REGISTRATION STUFF
-  (send-response! router {:identity message :meta {} :payload}))
+  (send-response! router {:identity message :meta {} :payload {}}))
 
