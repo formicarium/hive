@@ -11,7 +11,7 @@
     (String. bs)))
 
 (defn port->endpoint [port]
-  (str "tcp://localhost:" port))
+  (str "tcp://*:" port))
 
 (defn new-router-socket! [port]
   (let [router (zmq/socket context :router)]
@@ -28,6 +28,9 @@
       {:identity ident
        :meta     (cheshire/parse-string meta true)
        :payload  (cheshire/parse-string payload true)})))
+
+(defn respond! [router message]
+  (go (zmq/send router message)))
 
 (defn start-receiving! [router on-receive]
   (let [stop-channel (async/chan)
