@@ -4,4 +4,4 @@
 
 (defn- main [& args]
   (tracer.server/new-hive-server! 9898)
-  (api.server/run-dev))
+  (api.server/run))

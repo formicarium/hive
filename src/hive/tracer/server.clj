@@ -1,6 +1,7 @@
 (ns hive.tracer.server
-    (:require [hive.tracer.zmq :as tracer.zmq]
-              [hive.tracer.handlers :as tracer.handlers]))
+  (:require [hive.tracer.zmq :as tracer.zmq]
+            [hive.tracer.handlers :as tracer.handlers]
+            [com.stuartsierra.component :as component]))
 
 (defrecord ZMQServer [port on-receive-fn]
   component/Lifecycle
