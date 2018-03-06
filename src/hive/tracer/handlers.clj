@@ -1,5 +1,6 @@
 (ns hive.tracer.handler
-    (:require [hive.storage.store :as store]))
+    (:require [hive.storage.store :as store]
+              [hive.tracer.zmq :as tracer.zmq]))
 
 (defn new-event [message router]
     (prn "RECEIVED NEW-EVENT: " message)
@@ -26,4 +27,5 @@
     (-> message :meta :type keyword))
 
 (defn dispatch-messages [message router]
-  ((get message-handlers (get-event-type message)) message router))
+  (when-let [handler (get message-handlers (get-event-type message))]
+     (handler message router)))
