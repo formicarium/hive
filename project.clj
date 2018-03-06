@@ -10,4 +10,7 @@
                  [cheshire "5.8.0"]
                  [org.zeromq/jeromq "0.4.3"]
                  [org.zeromq/cljzmq "0.1.5-SNAPSHOT" :exclusions [org.zeromq/jzmq]]
+                 [io.pedestal/pedestal.service       "0.5.3"]
+                 [io.pedestal/pedestal.service-tools "0.5.3"]
+                 [io.pedestal/pedestal.jetty         "0.5.3"]
                  [com.stuartsierra/component "0.3.2"]])

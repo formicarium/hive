@@ -1,4 +1,4 @@
-(ns hive.zmq
+(ns hive.tracer.zmq
   (:require [zeromq.zmq :as zmq]
             [cheshire.core :as cheshire]
             [com.stuartsierra.component :as component]
@@ -47,19 +47,3 @@
 (defn terminate-receiver-channel! [ch] (async/close! ch))
 (defn terminate-router-socket! [router] (zmq/close router))
 
-(defrecord ZMQServer [port on-receive-fn]
-  component/Lifecycle
-  (start [this]
-    (let [router (new-router-socket! port)]
-      (assoc this :stop-channel (start-receiving! router on-receive-fn)
-                  :router router)))
-  (stop [this]
-    (terminate-receiver-channel! (:stop-channel this))
-    (terminate-router-socket! (:router this))
-    (dissoc this :channels :router)))
-
-(defn new-hive-server! [port on-receive-fn]
-  (component/start (->ZMQServer port on-receive-fn)))
-
-(defn terminate-hive-server! [server]
-  (component/stop server))
