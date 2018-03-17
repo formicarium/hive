@@ -30,7 +30,7 @@
        :payload  (cheshire/parse-string payload true)})))
 
 (defn respond! [router message]
-  (go (zmq/send router message)))
+  (async/go (zmq/send router message)))
 
 (defn start-receiving! [router on-receive]
   (let [stop-channel (async/chan)

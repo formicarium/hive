@@ -18,10 +18,10 @@
   (prn "RECEIVED CLOSE: " message)
   (store/unregister-service (-> message :meta :name keyword)))
 
-(defn message-handlers {:new-event new-event
-                        :heartbeat heartbeat
-                        :register  register
-                        :close     close})
+(def message-handlers {:new-event new-event
+                       :heartbeat heartbeat
+                       :register  register
+                       :close     close})
 
 (defn get-event-type [message]
   (-> message :meta :type keyword))
