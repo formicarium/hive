@@ -38,7 +38,6 @@
 
 (defn service-status [service]
   (let [{last-timestamp :last-timestamp} (second service)]
-    (prn "last update was : " last-timestamp)
     (condp t/after? last-timestamp
       (t/ago (t/seconds config/death-threshold-s))        :dead
       (t/ago (t/seconds config/unresponsive-threshold-s)) :unresponsive
