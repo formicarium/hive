@@ -1,5 +1,4 @@
-(ns hive.config
-  (:require [clj-time.core :as t]))
+(ns hive.config)
 
 (def main-ch-buffer-size 100)
 

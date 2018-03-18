@@ -1,12 +1,11 @@
 (ns hive.tracer.zmq
   (:require [cheshire.core :as cheshire]
-            [clojure.core.async :as async]
             [clj-time.core :as t]
-            [com.stuartsierra.component :as component]
-            [zeromq.zmq :as zmq]
+            [clojure.core.async :as async]
             [hive.config :as config]
+            [hive.scheduler :as scheduler]
             [hive.storage.store :as store]
-            [hive.scheduler :as scheduler]))
+            [zeromq.zmq :as zmq]))
 
 (def context (zmq/context 1))
 
