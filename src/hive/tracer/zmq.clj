@@ -4,6 +4,7 @@
             [clj-time.core :as t]
             [com.stuartsierra.component :as component]
             [zeromq.zmq :as zmq]
+            [hive.config :as config]
             [hive.storage.store :as store]
             [hive.scheduler :as scheduler]))
 
@@ -39,13 +40,13 @@
   (let [{last-timestamp :last-timestamp} (second service)]
     (prn "last update was : " last-timestamp)
     (condp t/after? last-timestamp
-      (t/ago (t/seconds 40)) :dead
-      (t/ago (t/seconds 23)) :unresponsive
+      (t/ago (t/seconds config/death-threshold-s))        :dead
+      (t/ago (t/seconds config/unresponsive-threshold-s)) :unresponsive
       :guchi)))
 
-(def update-fn {:guchi identity
+(def update-fn {:guchi        identity
                 :unresponsive store/mark-as-unresponsive!
-                :dead store/mark-as-dead!})
+                :dead         store/mark-as-dead!})
 
 (defn service->service-name [service]
   (first (keys service)))
@@ -57,7 +58,7 @@
 
 (defn start-receiving! [router on-receive]
   (let [stop-channel (async/chan)
-        heartbeat-ch (scheduler/heartbeat-ch 5)
+        heartbeat-ch (scheduler/heartbeat-ch config/healthcheck-timing-s)
         ch           (async/chan 1000)]
     (async/go-loop []
       (when (async/alt! stop-channel false :priority true :default :keep-going)
