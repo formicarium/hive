@@ -56,24 +56,24 @@
     (and (get update-fn status) (service->service-name service))))
 
 (defn start-receiving! [router on-receive]
-  (let [stop-channel (async/chan)
+  (let [stop-ch      (async/chan)
         heartbeat-ch (scheduler/heartbeat-ch config/healthcheck-timing-s)
-        ch           (async/chan 1000)]
+        main-ch      (async/chan config/main-ch-buffer-size)]
     (async/go-loop []
-      (when (async/alt! stop-channel false :priority true :default :keep-going)
+      (when (async/alt! stop-ch false :priority true :default :keep-going)
         (some->> (try-receive-message! router)
-                 (async/>! ch))
+                 (async/>! main-ch))
         (recur)))
     (async/go-loop []
-      (let [[source value] (async/alt! stop-channel [:stop]
-                                       ch           ([v] [:ch v])
+      (let [[source value] (async/alt! stop-ch [:stop]
+                                       main-ch ([v] [:main v])
                                        heartbeat-ch ([v] [:heartbeat v]))]
         (case source
-          :stop      (run! async/close! [stop-channel heartbeat-ch ch])
-          :ch        (do (prn "DEFAULT TRIGGERED.")(on-receive value router) (recur))
-          :heartbeat (do (prn "HEARTBEAT TRIGGERED.")(healthcheck-services!) (recur))
+          :stop      (run! async/close! [stop-ch heartbeat-ch main-ch])
+          :main      (do (prn "Main channel triggered.") (on-receive value router) (recur))
+          :heartbeat (do (prn "Heartbeat check triggered.") (healthcheck-services!) (recur))
           (recur))))
-    stop-channel))
+    stop-ch))
 
 (defn terminate-receiver-channel! [ch] (async/close! ch))
 (defn terminate-router-socket! [router] (zmq/close router))
