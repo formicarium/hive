@@ -6,3 +6,7 @@
 (def death-threshold-s 90)
 
 (def healthcheck-timing-s 20)
+
+(def io-threads 1)
+(def socket-receive-timeout 1000)
+(def socket-send-timeout 1000)
