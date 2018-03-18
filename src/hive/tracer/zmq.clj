@@ -25,7 +25,7 @@
 (defn receive-all-str! [socket]
   (mapv bytes->string (zmq/receive-all socket)))
 
-(defn receive-message! [socket]
+(defn try-receive-message! [socket]
   (let [[ident meta payload :as received] (receive-all-str! socket)]
     (when (every? some? received)
       {:identity ident
@@ -37,28 +37,13 @@
 
 (defn service-status [service]
   (let [{last-timestamp :last-timestamp} (second service)]
-    (println last-timestamp)
-    (condp t/before? last-timestamp
-      (t/ago (t/seconds 23)) :unresponsive
+    (prn "last update was : " last-timestamp)
+    (condp t/after? last-timestamp
       (t/ago (t/seconds 40)) :dead
+      (t/ago (t/seconds 23)) :unresponsive
       :guchi)))
 
-(comment (def service {:pimba {:status :ok :last-timestamp (t/now)}})
-         (:last-timestamp (first (vals service)))
-         (keys service)
-         (service->service-name service)
-  (service-status service)
-  (def unr (store/get-unresponsive-services))
-  unr
-  (map identity unr)
-  (group-by even? [1 2 3])
-  (second (first unr))
-  (def grouped (group-by service-status unr))
-  (for [[name valor] grouped]
-    name)
-         )
-
-(def update-fn {:ok identity
+(def update-fn {:guchi identity
                 :unresponsive store/mark-as-unresponsive!
                 :dead store/mark-as-dead!})
 
@@ -67,28 +52,27 @@
 
 (defn healthcheck-services! []
   (doseq [[status service] (group-by service-status (store/get-unresponsive-services))]
-    ((get update-fn status) (service->service-name service))))
+    (prn "changing service: " service " to status: " status)
+    (and (get update-fn status) (service->service-name service))))
 
 (defn start-receiving! [router on-receive]
   (let [stop-channel (async/chan)
         heartbeat-ch (scheduler/heartbeat-ch 5)
         ch           (async/chan 1000)]
-    (prn "stop-channel : " stop-channel "/n heartbeat-ch: " heartbeat-ch " default-ch: " ch)
     (async/go-loop []
       (when (async/alt! stop-channel false :priority true :default :keep-going)
-        (some->> (receive-message! router)
+        (some->> (try-receive-message! router)
                  (async/>! ch))
         (recur)))
     (async/go-loop []
-      (let [[a b] (async/alt! stop-channel [:stop]
-                              ch           ([v] [:ch v])
-                              heartbeat-ch ([v] [:heartbeat v]))]
-           (case a
-             :stop      (run! async/close! [stop-channel heartbeat-ch ch])
-             :ch        (do (on-receive b router) (recur))
-             :heartbeat (do (healthcheck-services!) (recur))
-             (do (prn "what is happening? " a " received from " b)
-                 (recur)))))
+      (let [[source value] (async/alt! stop-channel [:stop]
+                                       ch           ([v] [:ch v])
+                                       heartbeat-ch ([v] [:heartbeat v]))]
+        (case source
+          :stop      (run! async/close! [stop-channel heartbeat-ch ch])
+          :ch        (do (prn "DEFAULT TRIGGERED.")(on-receive value router) (recur))
+          :heartbeat (do (prn "HEARTBEAT TRIGGERED.")(healthcheck-services!) (recur))
+          (recur))))
     stop-channel))
 
 (defn terminate-receiver-channel! [ch] (async/close! ch))
