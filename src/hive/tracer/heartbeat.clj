@@ -1,13 +1,9 @@
 (ns hive.tracer.heartbeat
-  (:require [chime :refer [chime-ch]]
-            [clj-time.core :as t]
-            [clj-time.periodic :refer [periodic-seq]]
-            [hive.tracer.adapters :as adapters]
+  (:require [clj-time.core :as t]
+            [clojure.core.async :as async :refer [<! go-loop timeout]]
             [hive.config :as config]
-            [hive.storage.store :as store]))
-
-(defn heartbeat-ch [seconds]
-  (chime-ch (rest (periodic-seq (t/now) (t/seconds seconds)))))
+            [hive.storage.store :as store]
+            [hive.tracer.adapters :as adapters]))
 
 (def update-fn {:guchi        identity
                 :unresponsive store/mark-as-unresponsive!
@@ -24,3 +20,11 @@
   (doseq [[status service] (group-by service-status (store/get-unresponsive-services))]
     (prn "changing service: " service " to status: " status)
     (and (get update-fn status) (adapters/service->service-name service))))
+
+(defn start-heartbeat-checking! [seconds]
+  (go-loop []
+    (<! (timeout seconds))
+    (healthcheck-services!)
+    (recur)))
+
+(def terminate-heartbeat-checking! async/close!);;TODO- this does NOT close the channel :shrug:

@@ -1,11 +1,7 @@
 (ns hive.tracer.zmq
-  (:require [cheshire.core :as cheshire]
-            [clj-time.core :as t]
-            [clojure.core.async :as async]
-            [hive.tracer.adapters :as adapters]
+  (:require [clojure.core.async :as async]
             [hive.config :as config]
-            [hive.tracer.heartbeat :as heartbeat]
-            [hive.storage.store :as store]
+            [hive.tracer.adapters :as adapters]
             [zeromq.zmq :as zmq]))
 
 (def context (zmq/context config/io-threads))
@@ -29,7 +25,6 @@
 
 (defn start-receiving! [router on-receive]
   (let [stop-ch      (async/chan)
-        heartbeat-ch (heartbeat/heartbeat-ch config/healthcheck-timing-s)
         main-ch      (async/chan config/main-ch-buffer-size)]
     (async/go-loop []
       (when (async/alt! stop-ch false :priority true :default :keep-going)
@@ -38,12 +33,10 @@
         (recur)))
     (async/go-loop []
       (let [[source value] (async/alt! stop-ch [:stop]
-                                       main-ch ([v] [:main v])
-                                       heartbeat-ch ([v] [:heartbeat v]))]
+                                       main-ch ([v] [:main v]))]
         (case source
-          :stop      (run! async/close! [stop-ch heartbeat-ch main-ch])
+          :stop      (run! async/close! [stop-ch main-ch])
           :main      (do (prn "Main channel triggered.") (on-receive value router) (recur))
-          :heartbeat (do (prn "Heartbeat check triggered.") (heartbeat/healthcheck-services!) (recur))
           (recur))))
     stop-ch))
 

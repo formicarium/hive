@@ -9,7 +9,6 @@
                  [org.clojure/core.async "0.4.474"]
                  [clj-time "0.14.2"]
                  [cheshire "5.8.0"]
-                 [jarohen/chime "0.2.2"]
                  [org.zeromq/jeromq "0.4.3"]
                  [org.zeromq/cljzmq "0.1.5-SNAPSHOT" :exclusions [org.zeromq/jzmq]]
                  [io.pedestal/pedestal.service       "0.5.3"]

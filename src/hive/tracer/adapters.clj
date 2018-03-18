@@ -4,6 +4,9 @@
 (defn service->service-name [service]
   (first (keys service)))
 
+(defn identity->service-name [identity]
+  (keyword identity))
+
 (defn bytes->string [^bytes bs]
   (when bs
     (String. bs)))
