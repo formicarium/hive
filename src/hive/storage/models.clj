@@ -1,7 +1,6 @@
 (ns hive.storage.models
-  (:require [schema.core :as s]
-            [clj-time.types :as time.types])
-  (:import org.joda.time.DateTime))
+  (:require [schema.core :as s])
+  (:import java.time.LocalDateTime))
 
 (def EventTypes (s/enum :new :heartbeat :test))
 (def PortTypes (s/enum :http :kafka))
@@ -15,5 +14,5 @@
 (def ServiceStatuses (s/enum :ok :unresponsive :dead))
 
 (def Service {:name           s/Keyword
-              :last-timestamp DateTime
+              :last-timestamp LocalDateTime
               :status         ServiceStatuses})
