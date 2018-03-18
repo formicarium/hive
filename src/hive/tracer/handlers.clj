@@ -6,9 +6,9 @@
   (prn "RECEIVED NEW-EVENT: " message)
   (store/add-new-event (:payload message)))
 
-(defn heartbeat [message router]
-  (prn "RECEIVED HEARTBEAT: " message)
-  (tracer.zmq/respond! router {}))
+(defn heartbeat [{{:keys [type port]} :meta payload :payload identity :identity :as message} router]
+  (prn "RECEIVED HEARTBEAT FROM : " identity " TYPE: " type " PORT: " port " PAYLOAD: " payload)
+  #_(tracer.zmq/respond! router {}))
 
 (defn register [message router]
   (prn "RECEIVED REGISTER: " message)
@@ -18,7 +18,7 @@
   (prn "RECEIVED CLOSE: " message)
   (store/unregister-service (-> message :meta :name keyword)))
 
-(defn message-handlers {:new-event new-event
+(def message-handlers {:new-event new-event
                         :heartbeat heartbeat
                         :register  register
                         :close     close})
