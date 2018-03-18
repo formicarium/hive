@@ -6,7 +6,7 @@
 (def received-events* (atom []))
 
 (defn register-new-service [service-name]
-  (swap! registered-services* conj service-name {:last-timestamp 0}))
+  (swap! registered-services* conj service-name {:status :ok :last-timestamp (t/now)}))
 
 (defn unregister-service [service-name]
   (swap! registered-services* dissoc service-name))
