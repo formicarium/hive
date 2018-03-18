@@ -22,9 +22,9 @@
   (store/unregister-service (-> message :meta :name keyword)))
 
 (def message-handlers {:new-event new-event
-                        :heartbeat heartbeat
-                        :register  register
-                        :close     close})
+                       :heartbeat heartbeat
+                       :register  register
+                       :close     close})
 
 (defn get-event-type [message]
   (-> message :meta :type keyword))
