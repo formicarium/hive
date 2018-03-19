@@ -32,13 +32,11 @@
                  (async/>! main-ch))
         (recur)))
     (async/go-loop []
-      (let [[source value] (async/alt! stop-ch [:stop]
-                                       main-ch ([v] [:main v]))]
-        (case source
-          :stop      (run! async/close! [stop-ch main-ch])
-          :main      (do (prn "Main channel triggered.") (on-receive value router) (recur))
-          (recur))))
+      (when (async/alt! stop-ch false :default :keep-going)
+        (some-> (async/<! main-ch)
+                (on-receive router))
+        (recur)))
     stop-ch))
 
-(defn terminate-receiver-channel! [ch] (async/close! ch))
-(defn terminate-router-socket! [router] (zmq/close router))
+(def terminate-receiver-channel! async/close!)
+(def terminate-router-socket! zmq/close)

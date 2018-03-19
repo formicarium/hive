@@ -23,9 +23,11 @@
     (and (get update-fn status) (adapters/service->service-name service))))
 
 (defn start-heartbeat-checking! [seconds]
-  (go-loop []
-    (<! (timeout (* 1000 seconds)))
-    (healthcheck-services!)
-    (recur)))
+  (let [stop-ch (async/chan)]
+    (go-loop []
+      (when (async/alt! stop-ch false (timeout (* 1000 seconds)) true)
+        (healthcheck-services!)
+        (recur)))
+    stop-ch))
 
-(def terminate-heartbeat-checking! async/close!);;TODO- this does NOT close the channel :shrug:
+(def terminate-heartbeat-checking! async/close!)
