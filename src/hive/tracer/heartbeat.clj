@@ -13,7 +13,7 @@
   (let [{last-timestamp :last-timestamp} (second service)
         now                              (LocalDateTime/now)]
     (condp #(.isAfter %1 %2)  last-timestamp
-      (.minusSeconds now config/death-threshold-s)         :dead
+      (.minusSeconds now config/death-threshold-s)        :dead
       (.minusSeconds now config/unresponsive-threshold-s) :unresponsive
       :guchi)))
 

@@ -27,7 +27,7 @@
   (let [stop-ch      (async/chan)
         main-ch      (async/chan config/main-ch-buffer-size)]
     (async/go-loop []
-      (when (async/alt! stop-ch false :priority true :default :keep-going)
+      (when (async/alt! stop-ch false :default :keep-going)
         (some->> (try-receive-message! router)
                  (async/>! main-ch))
         (recur)))
