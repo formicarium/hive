@@ -1,14 +1,17 @@
 (ns hive.tracer.handlers
   (:require [hive.storage.store :as store]
-            [hive.tracer.zmq :as tracer.zmq]))
+            [hive.tracer.adapters :as adapters]))
 
 (defn new-event [message router]
   (prn "RECEIVED NEW-EVENT: " message)
   (store/add-new-event (:payload message)))
 
-(defn heartbeat [message router]
-  (prn "RECEIVED HEARTBEAT: " message)
-  (tracer.zmq/respond! router {}))
+(defn heartbeat [{{:keys [type port]} :meta payload :payload identity :identity :as message} router]
+  (some->> identity
+           adapters/identity->service-name
+           store/touch-service
+           (prn "RECEIVED HEARTBEAT FROM : " identity " TYPE: " type " PORT: " port " PAYLOAD: " payload))
+  #_(tracer.zmq/respond! router {}))
 
 (defn register [message router]
   (prn "RECEIVED REGISTER: " message)
