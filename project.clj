@@ -16,4 +16,10 @@
                  [prismatic/schema "1.1.7"]
                  [com.stuartsierra/component "0.3.2"]
                  [com.walmartlabs/lacinia "0.25.0"]
-                 [com.walmartlabs/lacinia-pedestal "0.7.0"]])
+                 [com.walmartlabs/lacinia-pedestal "0.7.0"]]
+  :resource-paths ["resources" "config"]
+  :min-lein-version "2.0.0"
+  :profiles {:dev     {:aliases      {"run-dev" ["trampoline" "run" "-m" "hive.core/start!"]}
+                       :dependencies [[io.pedestal/pedestal.service-tools "0.5.3"]]}
+             :uberjar {:aot :all}}
+  :main ^{:skip-aot true} hive.core)

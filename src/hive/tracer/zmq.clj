@@ -16,16 +16,25 @@
   (mapv adapters/bytes->string (zmq/receive-all socket)))
 
 (defn try-receive-message! [socket]
-  (let [[ident meta payload :as received] (receive-all-str! socket)]
+  (let [received (receive-all-str! socket)]
     (when (every? some? received)
       (adapters/raw-event->internal received))))
 
-(defn respond! [router message]
-  (async/go (zmq/send router message)))
+(defn send! [socket & parts]
+  (loop [[x & xs] parts]
+    (when x
+      (if xs
+        (do (zmq/send socket (adapters/str->bytes x) zmq/send-more)
+            (recur xs))
+        (zmq/send socket (adapters/str->bytes x))))))
 
-(defn start-receiving! [router on-receive]
-  (let [stop-ch      (async/chan)
-        main-ch      (async/chan config/main-ch-buffer-size)]
+(defn respond! [message identity router]
+  (prn "RESPONDING" identity)
+  (send! router identity message))
+
+(defn start-receiving! [router store on-receive]
+  (let [stop-ch (async/chan)
+        main-ch (async/chan config/main-ch-buffer-size)]
     (async/go-loop []
       (when (async/alt! stop-ch false :default :keep-going)
         (some->> (try-receive-message! router)
@@ -33,8 +42,9 @@
         (recur)))
     (async/go-loop []
       (when (async/alt! stop-ch false :default :keep-going)
-        (some-> (async/<! main-ch)
-                (on-receive router))
+        (let [message (async/<! main-ch)]
+          (async/go (on-receive message store))
+          (respond! "ACK" (:identity message) router))
         (recur)))
     stop-ch))
 
