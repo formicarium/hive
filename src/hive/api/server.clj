@@ -9,7 +9,6 @@
   (-> api.service/service
       (merge {:env                   :dev
               ::http/join?           true
-              ::http/routes          #(deref #'api.service/routes)
               ::http/allowed-origins {:creds           true
                                       :allowed-origins (constantly true)}})
       ;; Wire up interceptor chains
