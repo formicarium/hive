@@ -1,25 +1,21 @@
 (ns hive.api.service
-    (:require [io.pedestal.http :as http]
-              [io.pedestal.http.route :as route]
-              [io.pedestal.http.body-params :as body-params]
-              [io.pedestal.http.route.definition :refer [defroutes]]
-              [hive.storage.store :as store]))
+  (:require [com.walmartlabs.lacinia.pedestal :as lacinia]
+            [io.pedestal.http.route.definition :refer [defroutes]]
+            [hive.api.graphql :as graphql]
+            [io.pedestal.http.route.definition.table :as table]))
 
-(defn hello-world [request]
-    (let [name (get-in request [:params :name] "World")]
-      {:status 200 :body (str "Hello " name "!\n")}))
+(defn version [request]
+  {:status 200
+   :body   {:version 1}})
 
-(defn get-events [request]
-    {:status 200
-     :body {:events @store/registered-services*}})
+(def rest-routes
+  [["/version" :get version :route-name :get-version]])
 
-(defroutes routes
-    [[["/"
-        ["/hello" {:get hello-world}
-        ["/events" {:get get-events}]]]]])
+(def app-routes
+  (table/table-routes
+    (concat (lacinia/graphql-routes graphql/Schema {:graphiql true})
+            rest-routes)))
 
-(def service {:env                 :prod
-              ::http/routes        routes
-              ::http/resource-path "/public"
-              ::http/type          :jetty
-              ::http/port          8080})
+(def service (lacinia/service-map graphql/Schema {:graphiql      true
+                                                  :subscriptions true
+                                                  :routes        app-routes}))
