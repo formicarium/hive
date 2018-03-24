@@ -9,7 +9,8 @@
 
 (defn heartbeat [{{:keys [type service]} :meta payload :payload} store]
   (storage.api/touch-service service store)
-  (prn "RECEIVED HEARTBEAT FROM : " service " TYPE: " type " PAYLOAD: " payload))
+  (prn "RECEIVED HEARTBEAT FROM : " service " TYPE: " type " PAYLOAD: " payload)
+  "DONE")
 
 (defn register [message store]
   (prn "RECEIVED REGISTER: " message)
