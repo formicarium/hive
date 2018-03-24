@@ -9,6 +9,9 @@
                      :resolve (constantly "world")}}})
 
 (def mutations
-  {})
+  {:mutations {}})
 
-(def Schema (schema/compile (merge definitions queries mutations)))
+(def subscriptions
+  {:subscriptions {}})
+
+(def Schema (schema/compile (merge definitions queries mutations subscriptions)))
