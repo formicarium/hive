@@ -20,10 +20,10 @@
     (when (every? some? received)
       (adapters/raw-event->internal received))))
 
-(defn respond! [router message]
+(defn respond! [message router]
   (async/go (zmq/send router message)))
 
-(defn start-receiving! [router on-receive]
+(defn start-receiving! [router store on-receive]
   (let [stop-ch      (async/chan)
         main-ch      (async/chan config/main-ch-buffer-size)]
     (async/go-loop []
@@ -34,7 +34,8 @@
     (async/go-loop []
       (when (async/alt! stop-ch false :default :keep-going)
         (some-> (async/<! main-ch)
-                (on-receive router))
+                (on-receive store)
+                (respond! router))
         (recur)))
     stop-ch))
 

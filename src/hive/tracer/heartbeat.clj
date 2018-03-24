@@ -1,32 +1,30 @@
 (ns hive.tracer.heartbeat
-  (:require [clojure.core.async :as async :refer [<! go-loop timeout]]
+  (:require [clojure.core.async :as async]
             [hive.config :as config]
-            [hive.storage.store :as store]
-            [hive.tracer.adapters :as adapters])
+            [hive.storage.api :as storage.api]
+            [hive.storage.store :as store])
   (:import java.time.LocalDateTime))
 
-(def update-fn {:guchi        identity
-                :unresponsive store/mark-as-unresponsive!
-                :dead         store/mark-as-dead!})
+(defn service-status [{last-timestamp :last-timestamp}]
+  (let [now               (LocalDateTime/now)
+        death-time        (.minusSeconds now config/death-threshold-s)
+        unresponsive-time (.minusSeconds now config/unresponsive-threshold-s)]
+    (cond
+      (.isBefore last-timestamp death-time) :dead
+      (.isBefore last-timestamp unresponsive-time) :unresponsive
+      :else :healthy)))
 
-(defn service-status [service]
-  (let [{last-timestamp :last-timestamp} (second service)
-        now                              (LocalDateTime/now)]
-    (condp #(.isAfter %1 %2)  last-timestamp
-      (.minusSeconds now config/death-threshold-s)        :dead
-      (.minusSeconds now config/unresponsive-threshold-s) :unresponsive
-      :guchi)))
+(defn healthcheck-services! [store]
+  (doseq [[service-name service-entry] (-> (store/get-state store) deref :services)]
+    (let [service-status (service-status service-entry)]
+      (prn "changing service: " service-name " to status: " service-status)
+      (storage.api/set-status service-status service-name store))))
 
-(defn healthcheck-services! []
-  (doseq [[status service] (group-by service-status (store/get-unresponsive-services))]
-    (prn "changing service: " service " to status: " status)
-    (and (get update-fn status) (adapters/service->service-name service))))
-
-(defn start-heartbeat-checking! [seconds]
+(defn start-heartbeat-checking! [seconds store]
   (let [stop-ch (async/chan)]
-    (go-loop []
-      (when (async/alt! stop-ch false (timeout (* 1000 seconds)) true)
-        (healthcheck-services!)
+    (async/go-loop []
+      (when (async/alt! stop-ch false (async/timeout (* 1000 seconds)) :keep-going)
+        (healthcheck-services! store)
         (recur)))
     stop-ch))
 
