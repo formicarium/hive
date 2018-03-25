@@ -3,14 +3,16 @@
   (:import java.time.LocalDateTime))
 
 (defn register-new-service [service-name store]
-  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:status         :healthy
+  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:name           service-name
+                                                                               :status         :healthy
                                                                                :last-timestamp (LocalDateTime/now)})))
 
 (defn unregister-service [service-name store]
-  (swap! (store/get-state store) update :service #(dissoc % service-name)))
+  (swap! (store/get-state store) update :services #(dissoc % service-name)))
 
 (defn touch-service [service-name store]
-  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:status         :healthy
+  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:name           service-name
+                                                                               :status         :healthy
                                                                                :last-timestamp (LocalDateTime/now)})))
 
 (defn add-new-event [event store]

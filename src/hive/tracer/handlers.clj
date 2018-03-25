@@ -1,6 +1,5 @@
 (ns hive.tracer.handlers
-  (:require [hive.storage.api :as storage.api]
-            [hive.tracer.adapters :as adapters]))
+  (:require [hive.storage.api :as storage.api]))
 
 (defn new-event [message store]
   (prn "RECEIVED NEW-EVENT: " message)
@@ -9,8 +8,7 @@
 
 (defn heartbeat [{{:keys [type service]} :meta payload :payload} store]
   (storage.api/touch-service service store)
-  (prn "RECEIVED HEARTBEAT FROM : " service " TYPE: " type " PAYLOAD: " payload)
-  "DONE")
+  (prn "RECEIVED HEARTBEAT FROM" service " TYPE" type " PAYLOAD" payload))
 
 (defn register [message store]
   (prn "RECEIVED REGISTER: " message)

@@ -11,11 +11,14 @@
 (def rest-routes
   [["/version" :get version :route-name :get-version]])
 
-(def app-routes
+(defn app-routes [store]
   (table/table-routes
-    (concat (lacinia/graphql-routes graphql/Schema {:graphiql true})
+    (concat (lacinia/graphql-routes graphql/Schema {:graphiql    true
+                                                    :app-context {:store store}})
             rest-routes)))
 
-(def service (lacinia/service-map graphql/Schema {:graphiql      true
-                                                  :subscriptions true
-                                                  :routes        app-routes}))
+(defn service [store]
+  (lacinia/service-map graphql/Schema {:graphiql      true
+                                       :subscriptions true
+                                       :routes        (app-routes store)
+                                       :app-context   {:store store}}))

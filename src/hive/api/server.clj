@@ -4,9 +4,9 @@
 
 (defn run
   "The entry-point for 'lein run-dev'"
-  [& args]
+  [store]
   (println "\nCreating your [DEV] server...")
-  (-> api.service/service
+  (-> (api.service/service store)
       (merge {:env                   :dev
               ::http/join?           true
               ::http/allowed-origins {:creds           true
