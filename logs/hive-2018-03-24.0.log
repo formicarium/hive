@@ -1,0 +1,14 @@
+20:54:24.784 [main] INFO  org.eclipse.jetty.util.log - Logging initialized @11766ms to org.eclipse.jetty.util.log.Slf4jLog
+20:54:24.962 [main] INFO  org.eclipse.jetty.server.Server - jetty-9.4.0.v20161208
+20:54:25.008 [main] INFO  o.e.j.server.handler.ContextHandler - Started o.e.j.s.ServletContextHandler@49ba04ff{/,null,AVAILABLE}
+20:54:25.015 [main] INFO  o.e.jetty.server.AbstractConnector - Started ServerConnector@2adeb7e3{HTTP/1.1,[http/1.1, h2c]}{0.0.0.0:8888}
+20:54:25.016 [main] INFO  org.eclipse.jetty.server.Server - Started @12000ms
+20:54:43.289 [qtp328040985-18] INFO  io.pedestal.http - {:msg "POST /graphql", :line 80}
+20:54:43.295 [qtp328040985-18] INFO  io.pedestal.http.cors - {:msg "cors request processing", :origin "http://localhost:8888", :allowed true, :line 84}
+20:54:43.357 [qtp328040985-18] INFO  io.pedestal.http.cors - {:msg "cors response processing", :cors-headers {"Access-Control-Allow-Origin" "http://localhost:8888", "Access-Control-Allow-Credentials" "true", "Access-Control-Expose-Headers" "Content-Type"}, :line 111}
+20:54:46.957 [qtp328040985-20] INFO  io.pedestal.http - {:msg "POST /graphql", :line 80}
+20:54:46.958 [qtp328040985-20] INFO  io.pedestal.http.cors - {:msg "cors request processing", :origin "http://localhost:8888", :allowed true, :line 84}
+20:54:46.966 [qtp328040985-20] INFO  io.pedestal.http.cors - {:msg "cors response processing", :cors-headers {"Access-Control-Allow-Origin" "http://localhost:8888", "Access-Control-Allow-Credentials" "true", "Access-Control-Expose-Headers" "Content-Type"}, :line 111}
+20:58:45.672 [qtp328040985-24] INFO  io.pedestal.http - {:msg "POST /graphql", :line 80}
+20:58:45.673 [qtp328040985-24] INFO  io.pedestal.http.cors - {:msg "cors request processing", :origin "http://localhost:8888", :allowed true, :line 84}
+20:58:45.680 [qtp328040985-24] INFO  io.pedestal.http.cors - {:msg "cors response processing", :cors-headers {"Access-Control-Allow-Origin" "http://localhost:8888", "Access-Control-Allow-Credentials" "true", "Access-Control-Expose-Headers" "Content-Type"}, :line 111}
