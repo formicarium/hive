@@ -1,18 +1,20 @@
 (ns hive.tracer.handlers
-  (:require [hive.storage.api :as storage.api]))
+  (:require [hive.storage.api :as storage.api])
+  (:import (java.time LocalDateTime)))
 
-(defn new-event [message store]
+(defn new-event [{{:keys [service version]} :meta :as message} store]
   (prn "RECEIVED NEW-EVENT: " message)
-  (storage.api/touch-service (-> message :meta :service) store)
-  (storage.api/add-new-event (:payload message) store))
+  (storage.api/touch-service service version store)
+  (-> (assoc-in message [:meta :received-at] (LocalDateTime/now))
+      (storage.api/add-new-event store)))
 
-(defn heartbeat [{{:keys [type service]} :meta payload :payload} store]
-  (storage.api/touch-service service store)
+(defn heartbeat [{{:keys [type service version]} :meta payload :payload} store]
+  (storage.api/touch-service service version store)
   (prn "RECEIVED HEARTBEAT FROM" service " TYPE" type " PAYLOAD" payload))
 
-(defn register [message store]
-  (prn "RECEIVED REGISTER: " message)
-  (storage.api/touch-service (-> message :meta :service) store))
+(defn register [{{:keys [service version]} :meta} store]
+  #_(prn "RECEIVED REGISTER: " message)
+  (storage.api/touch-service service version store))
 
 (defn close [message store]
   (prn "RECEIVED CLOSE: " message)
