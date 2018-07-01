@@ -1,62 +1,18 @@
 (ns hive.syncthing.service
   (:require [hive.syncthing.logic :as logic]
-            [hive.components.http :as http]
-            [hive.utils :as utils]
-            [clojure.xml :as xml]
-            [clj-http.client :as client])
-  (:use [slingshot.slingshot :only [try+]]))
-
-; Constants
-(def st-config-path (str (System/getProperty "user.home") "/" ".syncthing/config.xml"))
-(def st-host "http://localhost:8384")
-(def bookmark
-  {:config (str st-host "/rest/system/config")})
-
-(defn get-api-key-from-st-config
-  "improve this"
-  [parsed-xml]
-  (print "heavy")
-  (get-in parsed-xml [:content 2 :content 1 :content 0]))
-
-(def get-api-key-from-st-config-memo (memoize get-api-key-from-st-config))
-
-(defn get-st-config
-  [path]
-  (-> path
-      xml/parse))
-
-(def st-config (atom (get-st-config st-config-path)))
-
-(defn read-st-config!
-  [path]
-  (->> path
-       (get-st-config)
-       (reset! st-config)))
-
-(defn get-base-options [api-key] (utils/tap {:headers {"X-API-Key" api-key}
-                                             :as      :json}))
-
-(defn authd-req!
-  [{:keys [url method options] :as params}]
-  (try+
-    (http/raw-req! {:url     url
-              :method  method
-              :options (merge (get-base-options (get-api-key-from-st-config-memo @st-config)) options)})
-    (catch [:status 403] {}
-      (print "error 403")
-      (read-st-config! st-config-path)
-      (authd-req! params))))
+            [hive.syncthing.request :as req]
+            [hive.syncthing.constants :as constants]))
 
 (defn post-config
   [config]
-  (authd-req! {:method :post
-              :url     (:config bookmark)
+  (req/authd-req! {:method :post
+              :url     (:config constants/bookmark)
               :data    config}))
 
 (defn get-config
   []
-  (authd-req! {:method :get
-              :url     (:config bookmark)}))
+  (req/authd-req! {:method :get
+              :url     (:config constants/bookmark)}))
 
 (defn update-config
   [update-fn & args]
