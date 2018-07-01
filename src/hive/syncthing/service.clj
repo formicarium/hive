@@ -1,12 +1,16 @@
 (ns hive.syncthing.service
   (:require [hive.syncthing.logic :as logic]
             [hive.components.http :as http]
-            [clojure.xml :as xml]))
+            [hive.utils :as utils]
+            [clojure.xml :as xml]
+            [clj-http.client :as client])
+  (:use [slingshot.slingshot :only [try+]]))
 
-(def bookmark
-  {:config "/rest/system/config"})
-(def st-host "http://localhost:8384")
+; Constants
 (def st-config-path (str (System/getProperty "user.home") "/" ".syncthing/config.xml"))
+(def st-host "http://localhost:8384")
+(def bookmark
+  {:config (str st-host "/rest/system/config")})
 
 (defn get-api-key-from-parsed-xml
   "improve this"
@@ -18,33 +22,38 @@
   (-> path
       xml/parse))
 
-(def st-config (get-st-config st-config-path))
-(def api-key (get-api-key-from-parsed-xml st-config))
+(def st-config (atom (get-st-config st-config-path)))
 
+(defn read-st-config!
+  [path]
+  (->> path
+       (get-st-config)
+       (reset! st-config)))
 
-(def st-base-options {:headers      {"X-API-Key" api-key}
-                      :content-type :json
-                      :accept       :json
-                      :as           :json})
+(defn get-base-options [api-key] (utils/tap {:headers {"X-API-Key" api-key}
+                                             :as      :json}))
 
-
-(def st-req (http/make-req st-base-options st-host))
-
-(defn get-config
-  []
-  (st-req {:method :get
-           :url    (:config bookmark)}))
+(defn authd-req!
+  [{:keys [url method options] :as params}]
+  (try+
+    (http/raw-req! {:url     url
+              :method  method
+              :options (merge (get-base-options (get-api-key-from-parsed-xml @st-config)) options)})
+    (catch [:status 403] {}
+      (print "error 403")
+      (read-st-config! st-config-path)
+      (authd-req! params))))
 
 (defn post-config
   [config]
-  (st-req {:method :post
-           :url    (:config bookmark)
-           :data   config}))
+  (authd-req! {:method :post
+              :url     (:config bookmark)
+              :data    config}))
 
-
-(defn print-ret [x]
-  (clojure.pprint/pprint x)
-  x)
+(defn get-config
+  []
+  (authd-req! {:method :get
+              :url     (:config bookmark)}))
 
 (defn update-config
   [update-fn & args]
