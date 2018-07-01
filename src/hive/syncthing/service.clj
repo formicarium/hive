@@ -37,3 +37,11 @@
 (defn add-device
   [device]
   (update-config logic/add-device device))
+
+(defn remove-device-by-name
+  [device-name]
+  (update-config logic/remove-device-by-name device-name))
+
+(defn add-folder
+  [folder]
+  (update-config logic/remove-device-by-name folder))
