@@ -3,8 +3,8 @@
 
 
 (defn register-device
-  [_ {:keys [deviceId]} _]
-  (syncthing.controller/register-device deviceId))
+  [_ {:keys [deviceId name]} _]
+  (syncthing.controller/register-device deviceId name))
 
 
 (defn register-folder

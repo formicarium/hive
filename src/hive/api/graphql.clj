@@ -37,7 +37,8 @@
 (def mutations
   {:mutations
    {:registerDevice {:type    '(non-null Boolean)
-                     :args    {:deviceId {:type '(non-null String)}}
+                     :args    {:deviceId {:type '(non-null String)}
+                               :name     {:type '(non-null String)}}
                      :resolve mutations.syncthing/register-device}
     :registerFolder {:type    '(non-null Boolean)
                      :args    {:folderId {:type '(non-null String)}}

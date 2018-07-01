@@ -3,8 +3,12 @@
 
 
 (defn register-device
-  [device-id]
+  [device-id name]
   (println (str "registering device id " device-id))
+  (syncthing.service/add-device {:deviceID device-id
+                                 :addresses ["dynamic"]
+                                 :introducer false
+                                 :name name})
   true)
 
 (defn get-syncthing
