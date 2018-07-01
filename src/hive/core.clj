@@ -6,7 +6,7 @@
 (def store (storage.store/new-store))
 
 (defn start! []
-  (tracer.server/new-hive-server! 9898 store)
+  #_(tracer.server/new-hive-server! 9898 store)
   (api.server/run store))
 
 (defn -main [& args]
