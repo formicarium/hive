@@ -15,6 +15,8 @@
                  [io.pedestal/pedestal.jetty "0.5.3"]
                  [prismatic/schema "1.1.7"]
                  [com.stuartsierra/component "0.3.2"]
+                 [clj-http "3.9.0"]
+                 [cheshire "5.8.0"]
                  [com.walmartlabs/lacinia "0.25.0"]
                  [com.walmartlabs/lacinia-pedestal "0.7.0"]]
   :resource-paths ["resources" "config"]
