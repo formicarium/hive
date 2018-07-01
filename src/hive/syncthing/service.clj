@@ -1,12 +1,26 @@
 (ns hive.syncthing.service
   (:require [hive.syncthing.logic :as logic]
-            [hive.components.http :as http]))
+            [hive.components.http :as http]
+            [clojure.xml :as xml]))
 
 (def bookmark
   {:config "/rest/system/config"})
-
-(def api-key "W3dbDV4atwUxzWpzU4GRvXUUSxkbucQA")
 (def st-host "http://localhost:8384")
+(def st-config-path (str (System/getProperty "user.home") "/" ".syncthing/config.xml"))
+
+(defn get-api-key-from-parsed-xml
+  "improve this"
+  [parsed-xml]
+  (get-in parsed-xml [:content 2 :content 1 :content 0]))
+
+(defn get-st-config
+  [path]
+  (-> path
+      xml/parse))
+
+(def st-config (get-st-config st-config-path))
+(def api-key (get-api-key-from-parsed-xml st-config))
+
 
 (def st-base-options {:headers      {"X-API-Key" api-key}
                       :content-type :json
@@ -23,7 +37,6 @@
 
 (defn post-config
   [config]
-  (clojure.pprint/pprint config)
   (st-req {:method :post
            :url    (:config bookmark)
            :data   config}))
