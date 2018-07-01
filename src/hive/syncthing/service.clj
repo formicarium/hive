@@ -1,6 +1,7 @@
 (ns hive.syncthing.service
   (:require [hive.syncthing.logic :as logic]
             [hive.syncthing.request :as req]
+            [hive.utils :as utils]
             [hive.syncthing.constants :as constants]))
 
 (defn post-config
@@ -33,3 +34,9 @@
 (defn add-folder
   [folder]
   (update-config logic/add-folder folder))
+
+(defn get-my-id []
+  (-> (req/authd-req! {:method :get
+                       :url    (:status constants/bookmark)})
+      :body
+      :myID))
