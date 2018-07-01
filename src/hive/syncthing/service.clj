@@ -5,7 +5,7 @@
 (def bookmark
   {:config "/rest/system/config"})
 
-(def api-key "4M9VaiHRMuvDFZVQrbeqfE6QLR7G5WVs")
+(def api-key "W3dbDV4atwUxzWpzU4GRvXUUSxkbucQA")
 (def st-host "http://localhost:8384")
 
 (def st-base-options {:headers      {"X-API-Key" api-key}
@@ -23,16 +23,22 @@
 
 (defn post-config
   [config]
+  (clojure.pprint/pprint config)
   (st-req {:method :post
            :url    (:config bookmark)
            :data   config}))
 
+
+(defn print-ret [x]
+  (clojure.pprint/pprint x)
+  x)
+
 (defn update-config
   [update-fn & args]
-  (-> (get-config)
-      :body
-      (apply update-fn args)
-      (post-config)))
+
+  (let [current-config (:body (get-config))
+        next-config (apply update-fn (concat (vector current-config) args))]
+    (post-config next-config)))
 
 (defn add-device
   [device]
@@ -44,4 +50,4 @@
 
 (defn add-folder
   [folder]
-  (update-config logic/remove-device-by-name folder))
+  (update-config logic/add-folder folder))
