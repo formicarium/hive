@@ -38,5 +38,6 @@
 (defn get-my-id []
   (-> (req/authd-req! {:method :get
                        :url    (:status constants/bookmark)})
+      utils/tap
       :body
       :myID))

@@ -10,7 +10,7 @@
 (defn get-syncthing
   []
   (println "get syncthing")
-  {:deviceId "XABLAU"})
+  {:deviceId (syncthing.service/get-my-id)})
 
 
 (defn register-folder

@@ -1,4 +1,6 @@
-(ns hive.syncthing.logic)
+(ns hive.syncthing.logic
+  (:require [hive.utils :as utils]
+            [xml-in.core :as xml]))
 
 
 (defn add-device
@@ -18,12 +20,11 @@
 (defn get-api-key-from-st-config
   "improve this"
   [st-config]
-  (print "heavy")
-  (get-in st-config [:content 2 :content 1 :content 0]))
+  (first (xml/find-first st-config [:configuration :gui :apikey])))
 
 (def get-api-key-from-st-config-memo (memoize get-api-key-from-st-config))
 
-(defn get-base-options [api-key] {:headers      {"X-API-Key" api-key}
-                                  :as           :json
-                                  :accept       :json
-                                  :content-type :json})
+(defn get-base-options [api-key] (utils/tap {:headers {"X-API-Key" api-key}
+                                  :as                 :json
+                                  :accept             :json
+                                  :content-type       :json}))
