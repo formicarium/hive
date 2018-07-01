@@ -12,10 +12,13 @@
 (def bookmark
   {:config (str st-host "/rest/system/config")})
 
-(defn get-api-key-from-parsed-xml
+(defn get-api-key-from-st-config
   "improve this"
   [parsed-xml]
+  (print "heavy")
   (get-in parsed-xml [:content 2 :content 1 :content 0]))
+
+(def get-api-key-from-st-config-memo (memoize get-api-key-from-st-config))
 
 (defn get-st-config
   [path]
@@ -38,7 +41,7 @@
   (try+
     (http/raw-req! {:url     url
               :method  method
-              :options (merge (get-base-options (get-api-key-from-parsed-xml @st-config)) options)})
+              :options (merge (get-base-options (get-api-key-from-st-config-memo @st-config)) options)})
     (catch [:status 403] {}
       (print "error 403")
       (read-st-config! st-config-path)
