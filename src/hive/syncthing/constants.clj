@@ -5,3 +5,4 @@
 (def st-host "http://localhost:8384")
 (def bookmark
   {:config (str st-host "/rest/system/config")})
+

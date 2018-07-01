@@ -23,5 +23,7 @@
 
 (def get-api-key-from-st-config-memo (memoize get-api-key-from-st-config))
 
-(defn get-base-options [api-key] {:headers {"X-API-Key" api-key}
-                                  :as      :json})
+(defn get-base-options [api-key] {:headers      {"X-API-Key" api-key}
+                                  :as           :json
+                                  :accept       :json
+                                  :content-type :json})

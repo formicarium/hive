@@ -14,4 +14,8 @@
     (catch [:status 403] {}
       (print "error 403")
       (config/read-st-config! constants/st-config-path)
-      (authd-req! params))))
+      (authd-req! params))
+    (catch [:status 400] req
+      (print "400")
+      (clojure.pprint/pprint req))))
+

@@ -5,20 +5,21 @@
 
 (defn post-config
   [config]
-  (req/authd-req! {:method :post
-              :url     (:config constants/bookmark)
-              :data    config}))
+  (req/authd-req! {:method  :post
+                   :url     (:config constants/bookmark)
+                   :options {:form-params config}}))
 
 (defn get-config
   []
   (req/authd-req! {:method :get
-              :url     (:config constants/bookmark)}))
+                   :url    (:config constants/bookmark)}))
 
 (defn update-config
   [update-fn & args]
 
   (let [current-config (:body (get-config))
         next-config (apply update-fn (concat (vector current-config) args))]
+    (clojure.pprint/pprint next-config)
     (post-config next-config)))
 
 (defn add-device
