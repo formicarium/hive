@@ -18,10 +18,12 @@
       response)
     (catch [:status 403] err
       (print "error 403")
-      (config/read-st-config! constants/st-config-path)
+      (config/reset-st-config! constants/st-config-path)
       (if (< @tries 3)
         (authd-req! params)
-        (throw+ err)))
+        (do
+          (reset! tries 0)
+          (throw+ err))))
     (catch [:status 400] err
       (print "400")
       (clojure.pprint/pprint err))))

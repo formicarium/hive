@@ -4,8 +4,7 @@
 
 (defn read-st-config!
   [path]
-  (-> path
-      xml/parse))
+  (xml/parse path))
 
 (def st-config (atom (read-st-config! constants/st-config-path)))
 
