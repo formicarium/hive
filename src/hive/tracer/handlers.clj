@@ -12,13 +12,13 @@
   (storage.api/touch-service service version store)
   (prn "RECEIVED HEARTBEAT FROM" service " TYPE" type " PAYLOAD" payload))
 
-(defn register [{{:keys [service version]} :meta} store]
-  #_(prn "RECEIVED REGISTER: " message)
+(defn register [{{:keys [service version]} :meta :as message} store]
+  (prn "RECEIVED REGISTER: " message)
   (storage.api/touch-service service version store))
 
 (defn close [message store]
   (prn "RECEIVED CLOSE: " message)
-  (storage.api/unregister-service (-> message :meta :name keyword) store))
+  (storage.api/unregister-service (-> message :meta :service) store))
 
 (def message-handlers {:new-event new-event
                        :heartbeat heartbeat
