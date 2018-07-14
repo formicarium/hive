@@ -1,38 +1,27 @@
 (ns hive.syncthing.service
   (:require [hive.syncthing.logic :as logic]
-            [hive.components.http :as http]))
-
-(def bookmark
-  {:config "/rest/system/config"})
-
-(def api-key "4M9VaiHRMuvDFZVQrbeqfE6QLR7G5WVs")
-(def st-host "http://localhost:8384")
-
-(def st-base-options {:headers      {"X-API-Key" api-key}
-                      :content-type :json
-                      :accept       :json
-                      :as           :json})
-
-
-(def st-req (http/make-req st-base-options st-host))
-
-(defn get-config
-  []
-  (st-req {:method :get
-           :url    (:config bookmark)}))
+            [hive.syncthing.request :as req]
+            [hive.utils :as utils]
+            [hive.syncthing.constants :as constants]))
 
 (defn post-config
   [config]
-  (st-req {:method :post
-           :url    (:config bookmark)
-           :data   config}))
+  (req/authd-req! {:method  :post
+                   :url     (:config constants/bookmark)
+                   :options {:form-params config}}))
+
+(defn get-config
+  []
+  (req/authd-req! {:method :get
+                   :url    (:config constants/bookmark)}))
 
 (defn update-config
   [update-fn & args]
-  (-> (get-config)
-      :body
-      (apply update-fn args)
-      (post-config)))
+
+  (let [current-config (:body (get-config))
+        next-config (apply update-fn (concat (vector current-config) args))]
+    (clojure.pprint/pprint next-config)
+    (post-config next-config)))
 
 (defn add-device
   [device]
@@ -44,4 +33,11 @@
 
 (defn add-folder
   [folder]
-  (update-config logic/remove-device-by-name folder))
+  (update-config logic/add-folder folder))
+
+(defn get-my-id []
+  (-> (req/authd-req! {:method :get
+                       :url    (:status constants/bookmark)})
+      utils/tap
+      :body
+      :myID))
