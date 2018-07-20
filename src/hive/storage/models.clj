@@ -16,7 +16,11 @@
 
 (s/defschema ServiceStatuses (s/enum :ok :unresponsive :dead))
 
+(s/defschema SyncthingConfig {:api-key   s/Str
+                              :device-id s/Str})
+
 (s/defschema Service {:name           s/Keyword
+                      :syncthing      SyncthingConfig
                       :last-timestamp LocalDateTime
                       :version        s/Str
                       :status         ServiceStatuses})

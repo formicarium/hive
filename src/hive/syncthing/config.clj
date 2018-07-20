@@ -6,10 +6,9 @@
   [path]
   (xml/parse path))
 
-(def st-config (atom (read-st-config! constants/st-config-path)))
+(def st-config (atom ""))
 
 (defn reset-st-config!
   [path]
-  (->> path
-       (read-st-config!)
-       (reset! st-config)))
+  (->>
+       (reset! st-config "")))

@@ -1,7 +1,7 @@
 (ns hive.syncthing.constants)
 
 ; Constants
-(def st-config-path (str "/Users/rafaelribeirocorreia/dev/formicarium/fmc/device2/syncthing-cfg/config.xml"))
+(def st-config-path (str "/app"))
 
 (def st-host "http://localhost:8386")
 (def bookmark

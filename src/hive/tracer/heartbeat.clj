@@ -10,13 +10,14 @@
         death-time        (.minusSeconds now config/death-threshold-s)
         unresponsive-time (.minusSeconds now config/unresponsive-threshold-s)]
     (cond
+      (nil? last-timestamp) nil
       (.isBefore last-timestamp death-time) :dead
       (.isBefore last-timestamp unresponsive-time) :unresponsive
       :else :healthy)))
 
 (defn healthcheck-services! [store]
   (doseq [[service-name service-entry] (-> (store/get-state store) deref :services)]
-    (let [service-status (service-status service-entry)]
+    (when-let [service-status (service-status service-entry)]
       (prn "changing service: " service-name " to status: " service-status)
       (storage.api/set-status service-status service-name store))))
 

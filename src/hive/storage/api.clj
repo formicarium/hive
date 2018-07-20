@@ -22,3 +22,7 @@
 
 (defn set-status [status service-name store]
   (swap! (store/get-state store) update-in [:services service-name] assoc :status status))
+
+(defn set-syncthing-config [service-name device-id api-key store]
+  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:syncthing {:api-key   api-key
+                                                                                           :device-id device-id}})))
