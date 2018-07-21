@@ -1,6 +1,6 @@
 (ns hive.tracer.handlers
   (:require [hive.storage.api :as storage.api])
-  (:import (java.time LocalDateTime)))
+  (:import [java.time LocalDateTime]))
 
 (defn new-event [{{:keys [service version]} :meta :as message} store]
   (prn "RECEIVED NEW-EVENT: " message)

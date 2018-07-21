@@ -17,7 +17,7 @@
                                                                                :last-timestamp (LocalDateTime/now)})))
 
 (defn add-new-event [event store]
-  (prn "NEW_EVENT  " event)
+  (prn "NEW_EVENT" event)
   (swap! (store/get-state store) update :events #(conj % event)))
 
 (defn set-status [status service-name store]
