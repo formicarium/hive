@@ -1,5 +1,3 @@
 (ns hive.utils)
 
-
-(defn tap [x]
-  (clojure.pprint/pprint x) x)
+(defn tap [x] (clojure.pprint/pprint x) x)
