@@ -24,6 +24,8 @@
   :resource-paths ["resources" "config"]
   :min-lein-version "2.0.0"
   :profiles {:dev     {:aliases      {"run-dev" ["trampoline" "run" "-m" "hive.core/start!"]}
-                       :dependencies [[io.pedestal/pedestal.service-tools "0.5.3"]]}
+                       :plugins      [[lein-midje "3.2.1"]]
+                       :dependencies [[io.pedestal/pedestal.service-tools "0.5.3"]
+                                      [midje "1.9.1"]]}
              :uberjar {:aot :all}}
   :main ^{:skip-aot true} hive.core)

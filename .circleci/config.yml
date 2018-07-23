@@ -1,0 +1,97 @@
+# Clojure CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-clojure/ for more details
+#
+version: 2
+jobs:
+  test:
+    docker:
+      - image: circleci/clojure:lein-2.7.1
+    working_directory: ~/repo
+
+    environment:
+      LEIN_ROOT: "true"
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "project.clj" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: lein deps
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "project.clj" }}
+
+      # run tests!
+      - run: lein midje
+  build-artifact:
+    docker:
+      - image: circleci/clojure:lein-2.7.1
+    working_directory: ~/repo
+
+    environment:
+      LEIN_ROOT: "true"
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run: lein uberjar
+      - store_artifacts:
+          path: ~/repo/target/hive-0.0.1-SNAPSHOT-standalone.jar
+          destination: jars/hive-${CIRCLE_SHA1}.jar
+      - persist_to_workspace:
+          root: ~/repo/target
+          paths:
+            - hive-0.0.1-SNAPSHOT-standalone.jar
+  build-docker:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+          at: target
+      - run: docker build -t hive:circleci .
+      - run: docker save -o hive-${CIRCLE_SHA1}.tar hive:circleci
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - hive-*.tar
+  publish-image:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: docker load -i hive-${CIRCLE_SHA1}.tar
+      - deploy:
+          name: publish
+          command: |
+            docker login -u $DOCKERHUB_LOGIN -p $DOCKERHUB_PASSWORD
+            docker tag hive:circleci formicarium/hive:$CIRCLE_SHA1
+            docker push formicarium/hive:$CIRCLE_SHA1
+workflows:
+  version: 2
+  hive_workflow:
+    jobs:
+      - test
+      - build-artifact:
+          requires:
+            - test
+      - build-docker:
+          requires:
+            - build-artifact
+      - publish-image:
+          requires:
+            - build-docker
+          filters:
+            branches:
+              only: master
