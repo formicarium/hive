@@ -1,4 +1,5 @@
 (ns hive.core
+  (:gen-class)
   (:require [hive.tracer.server :as tracer.server]
             [hive.storage.store :as storage.store]
             [hive.api.server :as api.server]))

@@ -27,5 +27,5 @@
                        :plugins      [[lein-midje "3.2.1"]]
                        :dependencies [[io.pedestal/pedestal.service-tools "0.5.3"]
                                       [midje "1.9.1"]]}
-             :uberjar {:aot :all}}
+             :uberjar {:aot [hive.core]}}
   :main ^{:skip-aot true} hive.core)
