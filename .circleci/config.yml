@@ -90,6 +90,7 @@ workflows:
           requires:
             - build-artifact
       - publish-image:
+          context: formicarium-services
           requires:
             - build-docker
           filters:
