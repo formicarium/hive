@@ -1,4 +1,5 @@
-(ns hive.utils)
+(ns hive.utils
+  (:require [clojure.pprint]))
 
 
 (defn tap [x]
