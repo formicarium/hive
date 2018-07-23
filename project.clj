@@ -1,4 +1,4 @@
-(defproject hive "0.1.0-SNAPSHOT"
+(defproject hive "0.0.1-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :repositories [["sonatype" {:url    "https://oss.sonatype.org/content/repositories/snapshots"
