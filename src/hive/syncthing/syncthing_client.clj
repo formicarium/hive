@@ -42,7 +42,7 @@
     (let [config (get-config this)
           folder-req (-> folder
                          :path
-                         (logic/new-folder (:device folder))
+                         (logic/new-folder (clojure.set/rename-keys {:device-id :deviceID} device))
                          (logic/with-device device))]
       (-> config
           (update :folders #(into % folder-req))
