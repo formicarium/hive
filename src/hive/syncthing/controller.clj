@@ -10,4 +10,4 @@
   (syncthing.client/add-device client {:device-id device-id :name name}))
 
 (defn register-folder [folder-id]
-  (syncthing.client/add-folder client ))
+  #_(syncthing.client/add-folder client folder device));Wip- get folder req data from lacinia
