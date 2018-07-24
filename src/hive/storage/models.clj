@@ -27,3 +27,6 @@
 
 (s/defschema State {:services {s/Keyword Service}
                     :events   [Event]})
+
+(s/defschema Device {:device-id s/Str
+                     :name s/Str})

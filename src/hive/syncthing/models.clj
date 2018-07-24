@@ -11,6 +11,14 @@
 
 (s/defschema MinimalDevice (select-keys Device [:deviceID]))
 
+(s/defschema DeviceRequest {:name s/Str,
+                            :deviceID s/Str,
+                            :_addressesStr s/Str,
+                            :compression s/Str,
+                            :introducer s/Bool,
+                            :selectedFolders {},
+                            :addresses [s/Str]})
+
 (s/defschema Folder {:$$hashKey s/Str,
                      :autoNormalize s/Bool,
                      :copiers s/Int,
@@ -60,3 +68,5 @@
                             :staggeredVersionsPath s/Str,
                             :trashcanClean s/Int,
                             :type s/Str})
+
+(s/defschema Config {s/Keyword s/Any})
