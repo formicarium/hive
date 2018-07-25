@@ -15,17 +15,17 @@
                 :as           :json})
 
 (defn get-config! [[{:keys [host api-key]}]]
-  (http.client/request (merge base-opts
-                              {:url     (str host "/rest/system/config")
-                               :method  :get
-                               :headers {"X-API-Key" api-key}})))
+  (:body (http.client/request (merge base-opts
+                                     {:url     (str host "/rest/system/config")
+                                      :method  :get
+                                      :headers {"X-API-Key" api-key}}))))
 
 (defn set-config! [{:keys [host api-key]} payload]
-  (http.client/request (merge base-opts
-                              {:url         (str host "/rest/system/config")
-                               :method      :post
-                               :form-params payload
-                               :headers     {"X-API-Key" api-key}})))
+  (:body (http.client/request (merge base-opts
+                                     {:url         (str host "/rest/system/config")
+                                      :method      :post
+                                      :form-params payload
+                                      :headers     {"X-API-Key" api-key}}))))
 
 (defrecord SyncthingClient [host api-key]
   Client
@@ -34,9 +34,7 @@
   (set-config [this new-config] (set-config! this new-config))
 
   (add-device [this device]
-    (set-config this (update (get-config this) :devices #(into % (->> device
-                                                                      utils/tap
-                                                                      logic/new-device)))))
+    (set-config this (update (get-config this) :devices #(into % (logic/new-device (:device-id device) (:name device))))))
 
   (add-folder [this folder device]
     (let [config (get-config this)

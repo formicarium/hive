@@ -2,7 +2,7 @@
   (:require [hive.syncthing.logic :as logic]
             [hive.syncthing.syncthing-client :as syncthing.client]))
 
-(def host "localhost:8384")
+(def host "http://localhost:8384")
 (def api-key "pimba123")
 (def client (syncthing.client/new-syncthing-client host api-key))
 

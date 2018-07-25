@@ -4,4 +4,4 @@
 
 (defn get-syncthing
   [_ _ _]
-  (syncthing.controller/get-syncthing))
+  #_(syncthing.controller/get-syncthing))
