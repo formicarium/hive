@@ -8,7 +8,7 @@
   (get-config [this])
   (set-config [this new-config])
   (add-device [this device])
-  (add-folder [this folder device]))
+  (add-folder [this folder device1 device2]))
 
 (def base-opts {:content-type :json
                 :accept       :json
@@ -38,14 +38,14 @@
   (add-device [this device]
     (set-config this (update (get-config this) :devices #(conj % (logic/new-device (:device-id device) (:name device))))))
 
-  (add-folder [this folder device]
+  (add-folder [this folder device1 device2]
     (let [config (get-config this)
           folder-req (-> folder
                          :path
-                         (logic/new-folder (clojure.set/rename-keys {:device-id :deviceID} device))
-                         (logic/with-device device))]
+                         (logic/new-folder device1)
+                         (logic/with-device device2))]
       (-> config
-          (update :folders #(into % folder-req))
+          (update :folders conj folder-req)
           (->> (set-config this))))))
 
 (defn new-syncthing-client [host api-key]

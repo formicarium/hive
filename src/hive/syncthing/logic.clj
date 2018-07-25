@@ -48,14 +48,16 @@
 
 (s/defn new-folder :- syncthing.models/FolderRequest
   [path :- s/Str
-   device :- syncthing.models/MinimalDevice]
+   device]
   (let [abs-path (clojure.string/join "/" [config-path path])
         folder-id (path->folder-id path)
         label folder-id]
     (merge folder-req-defaults {:path abs-path
                                 :label label
                                 :id folder-id
-                                :devices [device]})))
+                                :devices [{:deviceID (:device-id device)}]})))
 
-(defn with-device [folder device]
-  (update folder :devices #(conj device)))
+
+
+(defn with-device [folder {:keys [device-id]}]
+  (update folder :devices conj {:deviceID device-id}))
