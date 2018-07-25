@@ -22,7 +22,9 @@
 
 (defn set-config! [{:keys [host api-key]} payload]
   (:body (http.client/request (merge base-opts
-                                     {:url         (str host "/rest/system/config")
+                                     {:debug true
+                                      :debug-body true
+                                      :url         (str host "/rest/system/config")
                                       :method      :post
                                       :form-params payload
                                       :headers     {"X-API-Key" api-key}}))))
