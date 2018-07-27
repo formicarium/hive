@@ -9,6 +9,7 @@
   (-> (api.service/service store)
       (merge {:env                   :dev
               ::http/join?           true
+              ::http/port            8080
               ::http/allowed-origins {:creds           true
                                       :allowed-origins (constantly true)}})
       ;; Wire up interceptor chains
