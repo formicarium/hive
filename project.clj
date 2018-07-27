@@ -1,4 +1,4 @@
-(defproject hive "0.1.0-SNAPSHOT"
+(defproject hive "0.0.1-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :repositories [["sonatype" {:url    "https://oss.sonatype.org/content/repositories/snapshots"
@@ -21,6 +21,8 @@
   :resource-paths ["resources" "config"]
   :min-lein-version "2.0.0"
   :profiles {:dev     {:aliases      {"run-dev" ["trampoline" "run" "-m" "hive.core/start!"]}
-                       :dependencies [[io.pedestal/pedestal.service-tools "0.5.3"]]}
-             :uberjar {:aot :all}}
+                       :plugins      [[lein-midje "3.2.1"]]
+                       :dependencies [[io.pedestal/pedestal.service-tools "0.5.3"]
+                                      [midje "1.9.1"]]}
+             :uberjar {:aot [hive.core]}}
   :main ^{:skip-aot true} hive.core)
