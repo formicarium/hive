@@ -6,6 +6,7 @@
 
 (defprotocol Client
   (get-config [this])
+  (get-status [this])
   (set-config [this new-config])
   (add-device [this device])
   (add-folder [this folder device1 device2]))
@@ -14,26 +15,32 @@
                 :accept       :json
                 :as           :json})
 
-(defn get-config! [{:keys [host api-key]}]
+(defn ^:private get-config-impl! [{:keys [host api-key]}]
   (:body (http.client/request (merge base-opts
-                                     {:url     (str host "/rest/system/config")
-                                      :method  :get
-                                      :headers {"X-API-Key" api-key}}))))
+                                {:url     (str host "/rest/system/config")
+                                 :method  :get
+                                 :headers {"X-API-Key" api-key}}))))
 
-(defn set-config! [{:keys [host api-key]} payload]
+(defn ^:private set-config-impl! [{:keys [host api-key]} payload]
   (:body (http.client/request (merge base-opts
-                                     {:debug true
-                                      :debug-body true
-                                      :url         (str host "/rest/system/config")
-                                      :method      :post
-                                      :form-params payload
-                                      :headers     {"X-API-Key" api-key}}))))
+                                {:url         (str host "/rest/system/config")
+                                 :method      :post
+                                 :form-params payload
+                                 :headers     {"X-API-Key" api-key}}))))
+
+(defn ^:private get-status-impl! [{:keys [host api-key]}]
+  (:body (http.client/request (merge base-opts
+                                {:url     (str host "/rest/system/status")
+                                 :method  :get
+                                 :headers {"X-API-Key" api-key}}))))
 
 (defrecord SyncthingClient [host api-key]
   Client
-  (get-config [this] (get-config! this))
+  (get-config [this] (get-config-impl! this))
 
-  (set-config [this new-config] (set-config! this new-config))
+  (get-status [this] (get-status-impl! this))
+
+  (set-config [this new-config] (set-config-impl! this new-config))
 
   (add-device [this device]
     (utils/tap "adding device")

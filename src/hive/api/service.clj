@@ -5,7 +5,9 @@
             [io.pedestal.http.route.definition.table :as table]
             [io.pedestal.http.body-params :as body-params]
             [hive.storage.api :as storage.api]
-            [hive.storage.store :as store]))
+            [hive.storage.store :as store]
+            [hive.syncthing.logic :as syncthing.logic]
+            [hive.syncthing.syncthing-client :as syncthing.client]))
 
 (def common-interceptors [(body-params/body-params)])
 
@@ -14,10 +16,12 @@
    :body   {:version 1}})
 
 (defn service-deployed [store]
-  (fn [{{:keys [device-id api-key]} :json-params {:keys [name]} :path-params}]
-    (storage.api/set-syncthing-config name device-id api-key store)
-    {:status 200
-     :body   @(store/get-state store)}))
+  (fn [{{:keys [api-key]} :json-params {:keys [name]} :path-params}]
+    (let [client            (syncthing.client/new-syncthing-client (syncthing.logic/service->host name) api-key)
+          service-device-id (:myID (syncthing.client/get-status client))]
+      (storage.api/set-syncthing-config name service-device-id api-key store)
+      {:status 200
+       :body   @(store/get-state store)})))
 
 (defn rest-routes [store]
   [["/version" :get version :route-name :get-version]
