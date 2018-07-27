@@ -23,7 +23,10 @@
                               :status  {:type '(non-null :ServiceStatus)}}}
     :Syncthing {:description "Represents the syncthing instance running with Hive"
                 :fields      {:deviceId {:type '(non-null String)}}}
-    }})
+
+    :Registration {:descrition "qualquer coisa"
+                   :fields {:deviceId {:type '(non-null String)}
+                            :folderId {:type '(non-null String)}}}}})
 
 (def queries
   {:queries
@@ -36,13 +39,10 @@
 
 (def mutations
   {:mutations
-   {:registerDevice {:type    '(non-null Boolean)
-                     :args    {:deviceId {:type '(non-null String)}
-                               :name     {:type '(non-null String)}}
-                     :resolve mutations.syncthing/register-device}
-    :registerFolder {:type    '(non-null Boolean)
-                     :args    {:folderId {:type '(non-null String)}}
-                     :resolve mutations.syncthing/register-folder}}})
+   {:registerDevice {:type    :Registration
+                     :args    {:userDeviceId {:type '(non-null String)}
+                               :serviceName {:type '(non-null String)}}
+                     :resolve mutations.syncthing/register-device}}})
 
 (def subscriptions
   {:subscriptions {}})

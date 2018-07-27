@@ -41,7 +41,7 @@
                             "MQDJBTV-ENVZY34-IQF53LC-XVD5XS4-HNHW766-VEN5ASZ-I5CZA5F-W3TPDAE"}],
                           :order "random",
                           :autoNormalize true,
-                          :rescanIntervalS 3600,
+                          :rescanIntervalS 1,
                           :staggeredMaxAge 365,
                           :fsWatcherDelayS 10,
                           :externalCommand ""})

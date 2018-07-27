@@ -36,17 +36,21 @@
   (set-config [this new-config] (set-config! this new-config))
 
   (add-device [this device]
-    (set-config this (update (get-config this) :devices #(conj % (logic/new-device (:device-id device) (:name device))))))
+    (utils/tap "adding device")
+    (utils/tap (set-config this (update (get-config this) :devices #(conj % (logic/new-device (:device-id device) (:name device)))))))
 
   (add-folder [this folder device1 device2]
+    (utils/tap "adding folder")
     (let [config (get-config this)
-          folder-req (-> folder
-                         :path
-                         (logic/new-folder device1)
-                         (logic/with-device device2))]
+          {:keys [id] :as folder-req} (-> folder
+                                          :path
+                                          (logic/new-folder device1)
+                                          (logic/with-device device2))]
       (-> config
           (update :folders conj folder-req)
-          (->> (set-config this))))))
+          (->> (set-config this)))
+      {:deviceId (:device-id device2)
+       :folderId id})))
 
 (defn new-syncthing-client [host api-key]
   (->SyncthingClient host api-key))
