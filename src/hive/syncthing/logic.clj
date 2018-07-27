@@ -3,7 +3,7 @@
             [schema.core :as s]))
 
 (def config-path "/config")
-(def syncthing-api-port 2400)
+(def syncthing-api-port 24000)
 
 (defn service->host [service-name] (str "http://" (name service-name) ":" syncthing-api-port))
 

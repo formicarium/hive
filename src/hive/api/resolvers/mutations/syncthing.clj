@@ -4,5 +4,5 @@
 
 (defn register-device
   [{:keys [store]} {:keys [userDeviceId serviceName]} _]
-  (let [service (-> @(store/get-state store) :services (get (keyword serviceName)))]
+  (let [service (-> @(store/get-state store) :services (get serviceName))]
     (syncthing.controller/register-device userDeviceId service)))

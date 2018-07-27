@@ -16,10 +16,9 @@
    :body   {:version 1}})
 
 (defn service-deployed [store]
-  (fn [{{:keys [api-key]} :json-params {:keys [name]} :path-params}]
-    (let [client            (syncthing.client/new-syncthing-client (syncthing.logic/service->host name) api-key)
-          service-device-id (:myID (syncthing.client/get-status client))]
-      (storage.api/set-syncthing-config name service-device-id api-key store)
+  (fn [{{:keys [api-key device-id]} :json-params {:keys [name]} :path-params}]
+    (let [_ (prn device-id)]
+      (storage.api/set-syncthing-config name device-id api-key store)
       {:status 200
        :body   @(store/get-state store)})))
 
