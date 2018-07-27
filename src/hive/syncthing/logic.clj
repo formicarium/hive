@@ -1,30 +1,63 @@
 (ns hive.syncthing.logic
-  (:require [hive.utils :as utils]
-            [xml-in.core :as xml]))
+  (:require [hive.storage.models :as storage.models]
+            [hive.syncthing.models :as syncthing.models]
+            [schema.core :as s]
+            [hive.storage.models :as storage.models]))
+
+(def config-path "/config")
+
+(def device-req-defaults {:name "syncthing2",
+                          :deviceID
+                          "WO4ZVCR-6KHMJLX-FNC3NZA-XHGR5CY-4KVLPVY-NBWYNPK-EVTW3CS-75NQ4AB",
+                          :_addressesStr "dynamic",
+                          :compression "metadata",
+                          :introducer false,
+                          :selectedFolders {},
+                          :addresses ["dynamic"]})
+
+(s/defn new-device :- syncthing.models/DeviceRequest
+  [device-id :- s/Str, device-name :- s/Str]
+  (merge device-req-defaults {:name device-name
+                              :deviceID device-id}))
+
+(defn- path->folder-id [path]
+  path)
+
+(def folder-req-defaults {:path "/config/testando",
+                          :staggeredVersionsPath "",
+                          :type "readwrite",
+                          :minDiskFree {:value 1, :unit "%"},
+                          :simpleKeep 5,
+                          :fsWatcherEnabled true,
+                          :trashcanClean 0,
+                          :maxConflicts 10,
+                          :fsync true,
+                          :staggeredCleanInterval 3600,
+                          :label "testando",
+                          :id "4apjv-5jjry",
+                          :fileVersioningSelector "none",
+                          :devices
+                          [{:deviceID
+                            "MQDJBTV-ENVZY34-IQF53LC-XVD5XS4-HNHW766-VEN5ASZ-I5CZA5F-W3TPDAE"}],
+                          :order "random",
+                          :autoNormalize true,
+                          :rescanIntervalS 1,
+                          :staggeredMaxAge 365,
+                          :fsWatcherDelayS 10,
+                          :externalCommand ""})
+
+(s/defn new-folder :- syncthing.models/FolderRequest
+  [path :- s/Str
+   device]
+  (let [abs-path (clojure.string/join "/" [config-path path])
+        folder-id (path->folder-id path)
+        label folder-id]
+    (merge folder-req-defaults {:path abs-path
+                                :label label
+                                :id folder-id
+                                :devices [{:deviceID (:device-id device)}]})))
 
 
-(defn add-device
-  [config device]
-  (print device)
-  (update config :devices #(conj % device)))
 
-
-(defn remove-device-by-name
-  [config name]
-  (update config :devices (fn [devices]
-                            (remove #(= (:name %) name) devices))))
-
-(defn add-folder [config folder]
-  (update config :folders #(conj % folder)))
-
-(defn get-api-key-from-st-config
-  "improve this"
-  [st-config]
-  (first (xml/find-first st-config [:configuration :gui :apikey])))
-
-(def get-api-key-from-st-config-memo (memoize get-api-key-from-st-config))
-
-(defn get-base-options [api-key] (utils/tap {:headers {"X-API-Key" api-key}
-                                  :as                 :json
-                                  :accept             :json
-                                  :content-type       :json}))
+(defn with-device [folder {:keys [device-id]}]
+  (update folder :devices conj {:deviceID device-id}))

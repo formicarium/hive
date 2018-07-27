@@ -1,25 +1,15 @@
 (ns hive.syncthing.controller
-  (:require [hive.syncthing.service :as syncthing.service]))
+  (:require [hive.syncthing.logic :as logic]
+            [hive.utils :as utils]
+            [hive.syncthing.syncthing-client :as syncthing.client]))
 
+#_(def host "http://localhost:8384")
+#_(def api-key "KSaEhq9zqjXkbEmwPgZ5ppKSo4GatgXp")
+#_(def client (syncthing.client/new-syncthing-client host api-key))
 
-(defn register-device
-  [device-id name]
-  (println (str "registering device id " device-id))
-  (syncthing.service/add-device {:deviceID device-id
-                                 :addresses ["dynamic"]
-                                 :introducer false
-                                 :name name})
-  true)
-
-(defn get-syncthing
-  []
-  (println "get syncthing")
-  {:deviceId (syncthing.service/get-my-id)})
-
-
-(defn register-folder
-  [folder-id]
-  (println (str "registering folder id " folder-id))
-  (syncthing.service/add-folder {:id      folder-id
-                                 :path    "/tmp/teste"})
-  true)
+(defn register-device [user-device-id {service-name :name {:keys [api-key device-id]} :syncthing}]
+  (let [host (utils/tap (str "http://" (name service-name) ":8384"))
+        client (utils/tap (syncthing.client/new-syncthing-client host api-key))
+        folder {:path "app"}]
+    (syncthing.client/add-device client {:device-id user-device-id :name "UserPaps"})
+    (syncthing.client/add-folder client folder {:device-id user-device-id} {:device-id device-id})))
