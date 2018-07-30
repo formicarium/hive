@@ -1,14 +1,7 @@
-# hive
+# Hive
 
-A Clojure library designed to ... well, that part is up to you.
+[![CircleCI](https://circleci.com/gh/formicarium/hive.svg?style=svg)](https://circleci.com/gh/formicarium/hive)
 
-## Usage
+[DockerHub](https://hub.docker.com/r/formicarium/hive/)
 
-FIXME
-
-## License
-
-Copyright © 2018 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Formicarium Tracing and Devspace manager
