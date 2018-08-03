@@ -1,5 +1,5 @@
 (ns hive.tanajura.client
-  (:require '[clj-http.client :as http.client]))
+  (:require [clj-http.client :as http.client]))
 
 (defn tanajura-host "http://tanajura")
 
