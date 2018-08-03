@@ -5,9 +5,7 @@
             [io.pedestal.http.route.definition.table :as table]
             [io.pedestal.http.body-params :as body-params]
             [hive.storage.api :as storage.api]
-            [hive.storage.store :as store]
-            [hive.syncthing.logic :as syncthing.logic]
-            [hive.syncthing.syncthing-client :as syncthing.client]))
+            [hive.storage.store :as store]))
 
 (def common-interceptors [(body-params/body-params)])
 
@@ -17,14 +15,20 @@
 
 (defn service-deployed [store]
   (fn [{{:keys [api-key device-id]} :json-params {:keys [name]} :path-params}]
-    (let [_ (prn device-id)]
-      (storage.api/set-syncthing-config name device-id api-key store)
-      {:status 200
-       :body   @(store/get-state store)})))
+    (storage.api/new-service name device-id api-key store)
+    {:status 200
+     :body   @(store/get-state store)}))
+
+(defn service-pushed [store]
+  (fn [{{:keys [name]} :path-params}]
+    (let [git-api (-> @(store/get-state store) :services (get name) :git-api)]
+      ;; Ask for service git-api to pull from Tanajura
+      )))
 
 (defn rest-routes [store]
   [["/version" :get version :route-name :get-version]
-   ["/services/:name/deployed" :post (conj common-interceptors (service-deployed store)) :route-name :service-deployed]])
+   ["/services/:name/deployed" :post (conj common-interceptors (service-deployed store)) :route-name :service-deployed]
+   ["/service/:name/pushed" :post (conj common-interceptors (service-pushed store)) :route-name :service-pushed]])
 
 (defn app-routes [store]
   (table/table-routes
