@@ -16,6 +16,7 @@
                  [io.pedestal/pedestal.jetty "0.5.3"]
                  [prismatic/schema "1.1.7"]
                  [com.stuartsierra/component "0.3.2"]
+                 [org.clojure/tools.nrepl "0.2.13"]
                  [com.walmartlabs/lacinia "0.25.0"]
                  [com.walmartlabs/lacinia-pedestal "0.7.0"]]
   :resource-paths ["resources" "config"]
