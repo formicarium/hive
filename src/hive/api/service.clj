@@ -3,6 +3,7 @@
             [io.pedestal.http.route.definition :refer [defroutes]]
             [hive.api.graphql :as graphql]
             [io.pedestal.http.route.definition.table :as table]
+            [hive.tanajura.client :as tanajura.client]
             [io.pedestal.http.body-params :as body-params]
             [hive.storage.api :as storage.api]
             [hive.storage.store :as store]))
@@ -14,14 +15,15 @@
    :body   {:version 1}})
 
 (defn service-deployed [store]
-  (fn [{{:keys [api-key device-id]} :json-params {:keys [name]} :path-params}]
-    (storage.api/new-service name device-id api-key store)
+  (fn [{{:keys []} :json-params {:keys [name]} :path-params}]
+    (storage.api/new-service name store)
+    (tanajura.client/create-repo name)
     {:status 200
-     :body   @(store/get-state store)}))
+     :body   {:ok true}}))
 
 (defn service-pushed [store]
   (fn [{{:keys [name]} :path-params}]
-    (let [git-api (-> @(store/get-state store) :services (get name) :git-api)]
+    (let [git-api (-> @(store/get-state store) :services (get name) :)]
       ;; Ask for service git-api to pull from Tanajura
       )))
 
