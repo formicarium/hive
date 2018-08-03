@@ -28,7 +28,7 @@
 (defn rest-routes [store]
   [["/version" :get version :route-name :get-version]
    ["/services/:name/deployed" :post (conj common-interceptors (service-deployed store)) :route-name :service-deployed]
-   ["/service/:name/pushed" :post (conj common-interceptors (service-pushed store)) :route-name :service-pushed]])
+   ["/services/:name/pushed" :post (conj common-interceptors (service-pushed store)) :route-name :service-pushed]])
 
 (defn app-routes [store]
   (table/table-routes
