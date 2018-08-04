@@ -23,6 +23,7 @@
 (defn set-status [status service-name store]
   (swap! (store/get-state store) update-in [:services service-name] assoc :status status))
 
-(defn new-service [service-name store]
-  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:name   service-name
-                                                                               :status :waiting})))
+(defn new-service [service-name stinger-host store]
+  (swap! (store/get-state store) update-in [:services service-name] #(merge % {:name    service-name
+                                                                               :stinger {:host stinger-host}
+                                                                               :status  :deployed})))

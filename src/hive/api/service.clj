@@ -6,7 +6,8 @@
             [hive.tanajura.client :as tanajura.client]
             [io.pedestal.http.body-params :as body-params]
             [hive.storage.api :as storage.api]
-            [hive.storage.store :as store]))
+            [hive.storage.store :as store]
+            [clj-http.client :as http.client]))
 
 (def common-interceptors [(body-params/body-params)])
 
@@ -15,17 +16,18 @@
    :body   {:version 1}})
 
 (defn service-deployed [store]
-  (fn [{{:keys []} :json-params {:keys [name]} :path-params}]
-    (storage.api/new-service name store)
+  (fn [{{:keys [stinger-host]} :json-params {:keys [name]} :path-params}]
+    (storage.api/new-service name stinger-host store)
     (tanajura.client/create-repo name)
-    {:status 200
+    {:status 201
      :body   {:ok true}}))
 
 (defn service-pushed [store]
   (fn [{{:keys [name]} :path-params}]
     (let [stinger (-> @(store/get-state store) :services (get name) :stinger-host)]
-      ;; Ask for service git-api to pull from Tanajura
-      )))
+      (http.client/post (str stinger "/pull")))
+    {:status 202
+     :body   {:ok true}}))
 
 (defn rest-routes [store]
   [["/version" :get version :route-name :get-version]
