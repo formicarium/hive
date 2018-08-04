@@ -24,7 +24,7 @@
 
 (defn service-pushed [store]
   (fn [{{:keys [name]} :path-params}]
-    (let [stinger (-> @(store/get-state store) :services (get name) :stinger-host)]
+    (let [stinger (-> @(store/get-state store) :services (get name) :stinger :host)]
       (http.client/post (str stinger "/pull")))
     {:status 202
      :body   {:ok true}}))
