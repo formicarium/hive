@@ -23,7 +23,7 @@
 
 (defn service-pushed [store]
   (fn [{{:keys [name]} :path-params}]
-    (let [git-api (-> @(store/get-state store) :services (get name) :)]
+    (let [stinger (-> @(store/get-state store) :services (get name) :stinger-host)]
       ;; Ask for service git-api to pull from Tanajura
       )))
 
