@@ -1,0 +1,4 @@
+{:env         "dev"
+ :port        8080
+ :repl-port   2222
+ :tracer-port 9898}

@@ -7,8 +7,8 @@
       (assoc :receivedAt (-> event :meta :received-at str))
       (dissoc :received-at)))
 
-(defn get-events [{store :store} _ _]
-  (->> @(store/get-state store)
+(defn get-events [{{{:keys [storage]} :components} :request} _ _]
+  (->> @(store/get-state storage)
        :events
        (map externalize)
        reverse))

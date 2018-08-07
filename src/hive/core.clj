@@ -1,16 +1,9 @@
 (ns hive.core
   (:gen-class)
-  (:require [hive.tracer.server :as tracer.server]
-            [hive.storage.store :as storage.store]
-            [hive.repl :as repl]
-            [hive.api.server :as api.server]))
-
-(defonce store (storage.store/new-store))
+  (:require [hive.components :as components]))
 
 (defn start! []
-  (repl/new-repl-server! 2222)
-  (tracer.server/new-hive-server! 9898 store)
-  (api.server/run store))
+  (components/start-system!))
 
 (defn -main [& args]
   (start!))
