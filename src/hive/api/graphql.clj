@@ -1,6 +1,7 @@
 (ns hive.api.graphql
   (:require [com.walmartlabs.lacinia.schema :as schema]
             [hive.api.resolvers.queries.services :as queries.services]
+            [hive.api.resolvers.mutations.services :as mutations.services]
             [hive.api.resolvers.queries.events :as queries.events]))
 
 (def definitions
@@ -9,20 +10,16 @@
                     :values      [:healthy :unresponsive :dead]}}
 
    :objects
-   {:Event        {:description "Represents an IO Event sent by a service to Hive"
-                   :fields      {:payload    {:type 'String}
-                                 :producedAt {:type 'String}
-                                 :receivedAt {:type '(non-null String)}
-                                 :service    {:type '(non-null String)}}}
+   {:Event   {:description "Represents an IO Event sent by a service to Hive"
+              :fields      {:payload    {:type 'String}
+                            :producedAt {:type 'String}
+                            :receivedAt {:type '(non-null String)}
+                            :service    {:type '(non-null String)}}}
 
-    :Service      {:description "Represents a connected service to Hive"
-                   :fields      {:name    {:type '(non-null String)}
-                                 :version {:type 'String}
-                                 :status  {:type '(non-null :ServiceStatus)}}}
-
-    :Registration {:descrition "qualquer coisa"
-                   :fields     {:deviceId {:type '(non-null String)}
-                                :folderId {:type '(non-null String)}}}}})
+    :Service {:description "Represents a connected service to Hive"
+              :fields      {:name    {:type '(non-null String)}
+                            :version {:type 'String}
+                            :status  {:type '(non-null :ServiceStatus)}}}}})
 
 (def queries
   {:queries
