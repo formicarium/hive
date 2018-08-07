@@ -1,4 +1,4 @@
 {:env         "dev"
- :port        8080
- :repl-port   2222
- :tracer-port 9898}
+ :port        #or [#env API_PORT 8080]
+ :repl-port   #or [#env REPL_PORT 2222]
+ :tracer-port #or [#env TRACER_PORT 9898]}
