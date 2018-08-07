@@ -1,7 +1,6 @@
 (ns hive.api.graphql
   (:require [com.walmartlabs.lacinia.schema :as schema]
             [hive.api.resolvers.queries.services :as queries.services]
-            [hive.api.resolvers.mutations.services :as mutations.services]
             [hive.api.resolvers.queries.events :as queries.events]))
 
 (def definitions
