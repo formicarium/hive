@@ -21,3 +21,10 @@
 
 (defn start-system! []
   (reset! system (component/start-system base-system)))
+
+(defn get-system []
+  (deref system))
+
+(defn stop-system! []
+  (component/stop-system @system)
+  (reset! system nil))
