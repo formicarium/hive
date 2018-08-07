@@ -3,36 +3,16 @@
             [io.pedestal.http.route.definition :refer [defroutes]]
             [hive.api.graphql :as graphql]
             [io.pedestal.http.route.definition.table :as table]
-            [hive.tanajura.client :as tanajura.client]
-            [io.pedestal.http.body-params :as body-params]
-            [hive.storage.api :as storage.api]
-            [hive.storage.store :as store]
-            [clj-http.client :as http.client]))
+            [io.pedestal.http.body-params :as body-params]))
 
 (def common-interceptors [(body-params/body-params)])
 
-(defn version [request]
+(defn version [_]
   {:status 200
    :body   {:version 1}})
 
-(defn service-deployed [store]
-  (fn [{{:keys [stinger-host]} :json-params {:keys [name]} :path-params}]
-    (storage.api/new-service name stinger-host store)
-    (tanajura.client/create-repo name)
-    {:status 201
-     :body   {:ok true}}))
-
-(defn service-pushed [store]
-  (fn [{{:keys [name]} :path-params}]
-    (let [stinger (-> @(store/get-state store) :services (get name) :stinger :host)]
-      (http.client/post (str stinger "/pull")))
-    {:status 202
-     :body   {:ok true}}))
-
 (defn rest-routes [store]
-  [["/version" :get version :route-name :get-version]
-   ["/services/:name/deployed" :post (conj common-interceptors (service-deployed store)) :route-name :service-deployed]
-   ["/services/:name/pushed" :post (conj common-interceptors (service-pushed store)) :route-name :service-pushed]])
+  [["/version" :get version :route-name :get-version]])
 
 (defn app-routes [store]
   (table/table-routes

@@ -7,7 +7,7 @@
       (assoc :receivedAt (-> event :meta :received-at str))
       (dissoc :received-at)))
 
-(defn get-events [{store :store} arguments value]
+(defn get-events [{store :store} _ _]
   (->> @(store/get-state store)
        :events
        (map externalize)

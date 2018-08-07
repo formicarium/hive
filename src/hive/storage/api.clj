@@ -27,3 +27,6 @@
   (swap! (store/get-state store) update-in [:services service-name] #(merge % {:name    service-name
                                                                                :stinger {:host stinger-host}
                                                                                :status  :deployed})))
+
+(defn get-stinger-host [store service-name]
+  (-> @(store/get-state store) :services (get name) :stinger :host))
