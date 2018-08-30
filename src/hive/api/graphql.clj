@@ -6,10 +6,26 @@
 (def definitions
   {:enums
    {:ServiceStatus {:description "Health Status of a Service"
-                    :values      [:healthy :unresponsive :dead]}}
+                    :values      [:healthy :unresponsive :dead]}
+    :NodeType      {:description "Type of a Node"
+                    :values      [:consumer :service]}}
 
    :objects
-   {:Event   {:description "Represents an IO Event sent by a service to Hive"
+   {:Node      {:description "Node of the graph"
+                :fields      {:id   {:type '(non-null String)}
+                              :name {:type '(non-null String)}
+                              :type {:type '(non-null :NodeType)}}}
+
+    :Edge      {:description "Edge of the graph"
+                :fields      {:source {:type '(non-null :Node)}
+                              :target {:type '(non-null :Node)}
+                              :event  {:type '(non-null :Event)}}}
+
+    :Graph     {:description "Semi-materialized graph"
+                :fields      {:nodes {:type '(list :Node)}
+                              :edges {:type '(list :Edge)}}}
+
+    :Event   {:description "Represents an IO Event sent by a service to Hive"
               :fields      {:payload    {:type 'String}
                             :producedAt {:type 'String}
                             :receivedAt {:type '(non-null String)}
