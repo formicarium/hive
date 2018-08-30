@@ -24,42 +24,46 @@
                               :service   :tyrion}
                    :payload  {:type      :http
                               :direction :out-request
-                              :data {:eae :men}}}
+                              :data {:endpoint {:uri "/api/collections"
+                                                :service :sr-barriga}}}}
                   {:identity "sr-barriga"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 1)
                               :service   :sr-barriga}
                    :payload {:type :http
                              :direction :in-request
-                             :data {:eae :men}}}
+                             :data {:endpoint {:uri "/api/collections"
+                                               :service :tyrion}}}}
                   {:identity "sr-barriga"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 2)
                               :service   :sr-barriga}
                    :payload {:type :http
                              :direction :in-response
-                             :data {:eae :men}}}
+                             :data {:endpoint {:uri "/api/collections"
+                                               :service :tyrion}}}}
                   {:identity "tyrion"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 3)
                               :service   :tyrion}
                    :payload  {:type      :http
                               :direction :out-response
-                              :data {:eae :men}}}
+                              :data {:endpoint {:uri "/api/collections"
+                                                :service :sr-barriga}}}}
                   {:identity "tyrion"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 4)
                               :service   :tyrion}
                    :payload  {:type      :kafka
                               :direction :producer
-                              :data {:endpoint "debt-updated"}}}
+                              :data {:endpoint {:topic "debt-updated"}}}}
                   {:identity "line-items"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 5)
                               :service   :line-items}
                    :payload  {:type      :kafka
                               :direction :consumer
-                              :data {:falou :mana}}}]
+                              :data {:endpoint {:topic "debt-updated"}}}}]
           expected-nodes #{{:id   "tyrion"
                             :name "tyrion"
                             :type :service}
@@ -83,42 +87,46 @@
                               :service   :tyrion}
                    :payload  {:type      :http
                               :direction :out-request
-                              :data {:eae :men}}}
-                  {:identity "sr-barriga-supimpa"
+                              :data {:endpoint {:uri "/api/collections"
+                                                :service :sr-barriga}}}}
+                  {:identity "sr-barriga"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 1)
                               :service   :sr-barriga}
                    :payload {:type :http
                              :direction :in-request
-                             :data {:eae :men}}}
+                             :data {:endpoint {:uri "/api/collections"
+                                               :service :tyrion}}}}
                   {:identity "sr-barriga"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 2)
                               :service   :sr-barriga}
                    :payload {:type :http
                              :direction :in-response
-                             :data {:eae :men}}}
+                             :data {:endpoint {:uri "/api/collections"
+                                               :service :tyrion}}}}
                   {:identity "tyrion"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 3)
                               :service   :tyrion}
                    :payload  {:type      :http
                               :direction :out-response
-                              :data {:eae :men}}}
+                              :data {:endpoint {:uri "/api/collections"
+                                                :service :sr-barriga}}}}
                   {:identity "tyrion"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 4)
                               :service   :tyrion}
                    :payload  {:type      :kafka
                               :direction :producer
-                              :data {:eae :men}}}
+                              :data {:endpoint {:topic "debt-updated"}}}}
                   {:identity "line-items"
                    :meta     {:type      :new-event
                               :timestamp (LocalDateTime/of 2018 01 01 12 0 5)
                               :service   :line-items}
                    :payload  {:type      :kafka
                               :direction :consumer
-                              :data {:falou :mana}}}]
+                              :data {:endpoint {:topic "debt-updated"}}}}]
           expected-edges [{:source {:id   "tyrion"}
                            :target {:id   "sr-barriga"}
                            :event  {:identity "tyrion"
@@ -127,7 +135,8 @@
                                                :service   :tyrion}
                                     :payload  {:type      :http
                                                :direction :out-request
-                                               :data {:eae :men}}}}
+                                               :data {:endpoint {:uri "/api/collections"
+                                                                 :service :sr-barriga}}}}}
 
                           {:source {:id   "sr-barriga"}
                            :target {:id   "tyrion"}
@@ -137,7 +146,8 @@
                                                :service   :sr-barriga}
                                     :payload {:type :http
                                               :direction :in-request
-                                              :data {:eae :men}}}}
+                                              :data {:endpoint {:uri "/api/collections"
+                                                                :service :sr-barriga}}}}}
 
                           {:source {:id   "sr-barriga"}
                            :target {:id   "tyrion"}
@@ -147,7 +157,8 @@
                                                :service   :sr-barriga}
                                     :payload {:type :http
                                               :direction :in-response
-                                              :data {:eae :men}}}}
+                                              :data {:endpoint {:uri "/api/collections"
+                                                                :service :sr-barriga}}}}}
 
                           {:source {:id   "tyrion"}
                            :target {:id   "sr-barriga"}
@@ -157,7 +168,8 @@
                                                :service   :tyrion}
                                     :payload  {:type      :http
                                                :direction :out-response
-                                               :data {:eae :men}}}}
+                                               :data {:endpoint {:uri "/api/collections"
+                                                                 :service :sr-barriga}}}}}
 
                           {:source {:id   "tyrion"}
                            :target {:id   "debt-updated"}
@@ -167,7 +179,7 @@
                                                :service   :tyrion}
                                     :payload  {:type      :kafka
                                                :direction :producer
-                                               :data {:eae :men}}}}
+                                               :data {:endpoint {:topic "debt-updated"}}}}}
 
                           {:source {:id   "debt-updated"}
                            :target {:id   "line-items"}
@@ -177,10 +189,7 @@
                                                :service   :line-items}
                                     :payload  {:type      :kafka
                                                :direction :consumer
-                                               :data {:falou :mana}}}}
-
-
-                          ]]
+                                               :data {:endpoint {:topic "debt-updated"}}}}}]]
       (is (= expected-edges
              (g/events->edges events))))))
 
