@@ -4,4 +4,4 @@
 
 [DockerHub](https://hub.docker.com/r/formicarium/hive/)
 
-Formicarium Tracing and Devspace manager
+Formicarium Distributed Debugger
