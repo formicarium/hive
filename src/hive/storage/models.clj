@@ -29,7 +29,7 @@
                           :span-id s/Str
                           :parent-id s/Str})
 
-(s/defschema SpanPayload (s/constrained map?))
+(s/defschema SpanPayload (s/constrained s/Any map?))
 
 (s/defschema Span {:timestamp LocalDateTime
                    :tags SpanTags
@@ -45,7 +45,6 @@
 (s/defschema ServiceStatuses (s/enum :ok :unresponsive :dead))
 
 (s/defschema Service {:name           s/Keyword
-                      :syncthing      SyncthingConfig
                       :last-timestamp LocalDateTime
                       :version        s/Str
                       :status         ServiceStatuses})
