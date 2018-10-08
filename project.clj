@@ -15,7 +15,8 @@
                  [prismatic/schema "1.1.7"]
                  [org.clojure/tools.nrepl "0.2.13"]
                  [com.walmartlabs/lacinia "0.29.0-rc-1"]
-                 [com.walmartlabs/lacinia-pedestal "0.10.0-rc-1"]]
+                 [com.walmartlabs/lacinia-pedestal "0.10.0-rc-1"]
+                 [camel-snake-kebab "0.4.0"]]
   :resource-paths ["resources" "config"]
   :min-lein-version "2.0.0"
   :profiles {:dev     {:aliases      {"run-dev" ["trampoline" "run" "-m" "hive.core/start!"]}

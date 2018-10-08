@@ -1,5 +1,7 @@
 (ns hive.tracer.adapters
-  (:require [cheshire.core :as cheshire]))
+  (:require [camel-snake-kebab.core :refer [->camelCase]]
+            [cheshire.core :as cheshire]
+            [clojure.walk :refer [postwalk]]))
 
 (defn bytes->string [^bytes bs]
   (when bs
@@ -16,3 +18,19 @@
 (defn str->bytes [str]
   (when str
     (.getBytes str)))
+
+(defn externalize [event]
+  (-> event
+      (assoc :receivedAt (-> event :meta :received-at str))
+      (dissoc :received-at)
+      (update-in [:meta :type] keyword)
+      (as-> %
+          (if (= :new-event (get-in % [:meta :type]))
+            (-> %
+                (update-in [:payload :tags :direction] keyword)
+                (update-in [:payload :tags :kind] keyword)
+                (update-in [:payload :tags :type] keyword)
+                (->> (postwalk #(if (keyword? %)
+                                  (->camelCase %)
+                                  %))))
+            (dissoc % :payload)))))
