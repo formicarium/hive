@@ -44,7 +44,8 @@
                                 :payload   {:type 'String}
                                 :context   {:type '(non-null :SpanContext)}}}
     :Event       {:description "Represents an IO Event sent by a service to Hive"
-                  :fields      {:identity {:type '(non-null String)}
+                  :fields      {:id       {:type '(non-null String)} 
+                                :identity {:type '(non-null String)}
                                 :meta     {:type :Meta}
                                 :payload  {:type :Span}}}
     :Service     {:description "Represents a connected service to Hive"

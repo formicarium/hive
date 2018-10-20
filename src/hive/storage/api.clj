@@ -18,7 +18,7 @@
 
 (defn add-new-event [event store]
   (prn "NEW_EVENT" event)
-  (swap! (store/get-state store) update :events #(conj % event)))
+  (swap! (store/get-state store) update :events #(conj % (assoc event :id (.toString (java.util.UUID/randomUUID))))))
 
 (defn set-status [status service-name store]
   (swap! (store/get-state store) update-in [:services service-name] assoc :status status))
